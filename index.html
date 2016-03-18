@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="../../favicon.ico">
+
+        <title>Wikisim: Wikipedia Concept Representation</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="bootstrap-3.3.4-dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="bootstrap-3.3.4-dist/starter-template.css" rel="stylesheet">
+
+        <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+        <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+        <script src="bootstrap-3.3.4-dist/assets/js/ie-emulation-modes-warning.js"></script>
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+          <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+        <![endif]-->
+        
+    </head>
+
+    <body>
+
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">WikiSim</a>
+                </div>
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#doc">Documentation</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="results.html">Results Page</a></li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+            </div>
+        </nav>
+
+        <div class="container" id="bigdiv" disabled="true">
+            <h2>WikiSim Project</h2>
+            <p>Wikisim provides a reliable way for concept represenation using Wikipedia. The approach is based on 
+               Wikipedia "Graph Embeddin". You can play with the demo, or directly request to the webserver. 
+             </p>
+            
+            <form role="form" enctype="multipart/form-data">
+
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                             <label>Parameters:</label>
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label>Similarity/Embedding:</label>
+                                <div class="radio">
+                                    <label><input type="radio" name="task" value="sim" checked="checked">Similarity</label>
+                                    <label><input type="radio" name="task" value="emb" >Concept Embeddings</label>
+                                </div>
+                            </div>        
+                            <div class="form-group">
+                             	<label>Graph Direction:</label>
+                                <div class="radio">
+                                    <label><input type="radio" name="direction" value="1" checked="checked">Out (Recommended)</label>
+                                    <label><input type="radio" name="direction" value="0">In (Slow)</label>
+                                    <label><input type="radio" name="direction" value="2">All (Slow)</label>
+                                </div>
+                            </div>        
+                            <div class="form-group" id="cutdiv">
+                                <label>k for top-k embeddings (enter 'all' to get eveything):</label>
+                                <input type="text" class="form-control" id="cutoff" value="20">
+                            </div>        
+                            <div class="form-group">
+								<div class="checkbox">
+                                	<label><input type="checkbox" id="viz" checked=true> Show tagcloud</label>
+								</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <label id='tasklabel'> Concept Pairs Similarity </label>
+                        </div>                            
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label for="c1">Concept 1:</label>
+                                <input type="text" class="form-control" id="c1" value="Delusion">
+                            </div>
+                            <div class="form-group" id="c2div">
+                                <label for="c2">Concept 1:</label>
+                                <input type="text" class="form-control" id="c2" value="Schizophrenia">
+                            </div>
+                            <div class="form-group">
+                                <div class="btn-group btn-group-lg">
+                                    <button type="button" id="simbutton" class="btn btn-primary">Calculate</button>
+                                </div>
+                            </div>
+                            <div class="form-group">                                
+                                <div class="alert alert-success " role="alert" id='simdiv' hidden=true>
+                                    <label for="simdiv" >Similarity:</label> <label id="sim">test</label>
+                                </div>            
+                                <div class="progress collapse" id="simprogdiv">
+                                    <progress></progress>
+                                </div>
+								<div id="chartviz">
+								</div>	
+                                
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>    
+            </form>
+
+            <form role="form" enctype="multipart/form-data">
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <label> Batch </label>
+                        </div>
+                        
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <input type="file"  class="form-control" name="file" id="simfileinput">
+                            </div>
+                            <div class="form-group">
+                                <div class="btn-group btn-group-lg">
+                                    <button type="button" id="batchsimbutton" class="btn btn-primary">Calculate</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="alert alert-success " role="alert" id='batchsimdiv' hidden=true>
+                                    <label>Successfully updated, check the <a href='results.html'>results page</a> for the results</label>
+                                </div>            
+                                <div class="progress collapse" id="batchsimprogdiv">
+                                    <progress></progress>
+                                </div>
+                                
+                            </div>
+
+                        </div>
+                    </div>
+                </div>    
+            </form>
+
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a name="doc"></a>
+                        <label> Documentation </label>
+                        </div>
+                        
+                        <div class="panel-body">
+                        <p><strong> Single mode </Strong></p>
+
+                        <p>The webservice provides two basic functions (or tasks) Embedding and Simiarity calculation. Each needs specific parameters, and can be done in batch mode aswell.</p>
+                        <ul>
+                            <li>
+                                Concept Representation (Embedding)</br>
+                                parameters: </br>
+                                <code>task</code>: should be 'emb' for calculating the embedding </br>
+                                <code>direction</code>: 0 for using <em>incomming links</em>, 1 for <em>outgoing links</em> and 2 for <em>both</em>. We recommend using only outgoing links as it provides decent results and is significantly faster</br>
+                                <code>cutoff</code>: The dimensionality of the embedding. This parameter is only used if you want to return the embedding, the similarity calculation always use all the dimensions. </br>
+                                <code>c1</code>: the concept to be processed </br>
+                                Example (using curl): </br>
+                                <code>curl --request POST 'http://localhost/~sajadi/wikisim/cgi-bin/cgi-pairsim.py' --data "task=emb" --data "dir=1" --data "cutoff=10" --data "c1=Sanandaj"</code>
+                             </li>
+                            <li>
+                                Similarity
+                                parameters: </br>
+                                <code>task</code>: should be 'sim' for calculating the embedding </br>
+                                 <code>direction</code>: 0 for using incomming links, 1 for outgoing links and 2 for both. We recommend using only outgoing links as it provides decent results and is significantly faster</br>
+                                 <code>c1 (and c2)</code>: the concept to be processed</br>
+                                Example (using curl): </br>
+                                <code>curl --request POST 'http://localhost/~sajadi/wikisim/cgi-bin/cgi-pairsim.py' --data "task='sim'" --data "dir=1"  --data "c1=Tehran" --data "c2=Sanandaj"</code>
+                            </li>
+                        </ul>
+                        <p><strong> Batch mode </Strong></p>
+                        <p>We strongly recommend using batch mode, either by post request and sending the file, or simply upload the file in the batch mode. For embedding, each line of the file contains a single concept. For similarity calculation, file should be tab seperated, each line containing a pair of Wikipedia Concepts. </p>
+
+                    </div>
+                </div>
+            </div>            
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a name="about"></a>
+                        <label> About </label>
+                    </div>
+                    
+                    <div class="panel-body">
+                        <p><a title="Armin Sajadi" href="http://projects.cs.dal.ca/visualtextanalytics/people/sajadi/">Armin Sajadi</a> - Faculty of Computer Science<br>
+                        Dr. Evangelos Milios&nbsp;- Faculty of Computer Science<br>
+                        Dr. Vlado Kešelj – Faculty of Computer Science<br>
+                        Dr. Jeannette C.M. Janssen&nbsp;- Mathematics &amp; Statistics</p>
+
+                        <p><strong><a href="../resrc/HitSim.pdf">Slides</a><br />
+                        </strong></p>
+                        <p><strong>Published Reports</strong></p>
+                        <p>Armin Sajadi, Evangelos E. Milios, Vlado Keselj, Jeannette C. M. Janssen, "Domain-Specific Semantic Relatedness from Wikipedia Structure: A Case Study in Biomedical Text""<a href="http://dblp.uni-trier.de/db/conf/cicling/cicling2015-1.html#SajadiMKJ15">CICLing (1) 2015</a>: 347-360 (<a href="http://dblp.uni-trier.de/rec/bibtex/conf/cicling/SajadiMKJ15">bib</a>, <a href="http://link.springer.com/chapter/10.1007%2F978-3-319-18111-0_26">pdf</a>)</p>
+                        <p>Armin Sajadi,"<em>Graph-Based Domain-Speciﬁc Semantic Relatedness from Wikipedia</em>", Canadian AI 2014, LNAI 8436, pp. 381–386, 2014 (<a href="../resrc/caai14.bib">bib</a>, <a href="http://link.springer.com/chapter/10.1007%2F978-3-319-06483-3_42#">pdf</a>)</p>
+                        <p><strong>Awards</strong></p>
+                        <p>Verifiability, Reproducibility, and Working Description Award, Computational Linguistics and In- telligent Text Processing, 16th International Conference, CICLing 2015, Cairo, Egypt, April 14-20, 2015</p>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <a name="contact"></a>
+                        <label> Contact </label>
+                        <p><a title="Armin Sajadi" href="129.173.212.50/~sajadi">Armin Sajadi</a><br>
+                        <p>sajadi[at][cs][dal][ca]</p>
+                        <p>asajadi[at][gmail][dot][com]</p>
+                    </div>            
+                </div>
+            </div>    
+        </div>
+
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="bootstrap-3.3.4-dist/js/bootstrap.min.js"></script>
+
+        <script src="js/d3.js"></script>
+        <script src="js/d3.layout.cloud.js"></script>
+        <script src="js/simpledraw.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                taskChange($('input[name=task]:checked').val());
+
+
+                $("input[name='task']").change(function () {
+
+                    taskChange($(this).val());
+                });
+
+                function taskChange(task){
+
+                    $('#simdiv').hide()
+                    $('#batchsimdiv').hide()
+                    $('#sim').text('')
+
+                    if (task == 'emb'){
+
+                        $('#c2div').hide();
+                        $("label[for='c1']").text('The Concept')
+                        $('#tasklabel').text('Concept Embedding')
+
+                        $("label[for='simdiv']").text('Embedding (Ordered): ');
+                        return;
+                    }
+                    if (task == 'sim'){
+                        $('#c2div').show();
+                        $("label[for='c1']").text('Concept 1')
+                        $('#tasklabel').text('Concept Pairs Similarity')
+
+                        $("label[for='simdiv']").text('Similarity: ');
+                    }
+
+                }
+
+                $("#simbutton").click(function () {
+
+                    $("#sim").text('');
+                    $("#chart1").remove();
+                    $("#chart2").remove();
+                    $("#chart1").remove();
+                     
+                    if ($("#c1").val() && $("#c2").val()){
+                        postpairs();
+                    }
+
+                });
+
+                $("#batchsimbutton").click(function () {
+                    if ($("#simfileinput").val()){
+                        uploadfile();
+                    }
+
+                });
+            
+               function postpairs (){
+                    $('#simbutton').attr('disabled', true);
+                    $('#simdiv').hide();
+                    $('#simprogdiv').show();
+
+                   var task=$('input[name=task]:checked').val()
+                   var viz=$('#viz').is(':checked');
+                   $.post(  "cgi-bin/cgi-pairsim.py",
+                            {
+                                task: task,
+                                dir: $('input[name=direction]:checked').val(), 
+                                cutoff: $("#cutoff").val(),
+                                viz:viz,
+                                c1: $("#c1").val(),
+                                c2: $("#c2").val()
+                            },
+                            function (data, status) {
+                                $('#simbutton').attr('disabled', false);
+                                $('#simprogdiv').hide();
+                                $('#simdiv').show();
+                                if (task=='emb'){
+                                    words = createWords(data['em']);
+                                    wordsText=sortWords(words);
+                                    $('#sim').text(wordsText);
+                                    if (viz){
+                                        $('#chartviz').append("<div id='chart' style='width:49%; height:500px; float:left; border-style:solid'></div>");
+                                        simpledraw(words, '#chart');
+                                    }
+                                    return;
+
+                                }
+                                $("#sim").text(data["rel"]);
+                                if  ('em1' in data){              
+                                        $('#chartviz').append("<div id='chart1' style='width:49%; height:500px; float:left; border-style:solid'></div>");
+                                        simpledraw(createWords(data['em1']), '#chart1');
+                                }
+                                if  ('em2' in data){                                
+                                        $('#chartviz').append("<div id='chart2' style='width:49%;margin-left:2%; height:500px; float:left; border-style:solid'></div>");
+                                        simpledraw(createWords(data['em2']), '#chart2');
+                                }
+                            }
+                        ).fail(function (xhr, textStatus, errorThrown) {
+                        	$('#simdiv').text("error: " + xhr.responseText + "\n" + textStatus);
+                            $('#simdiv').show()
+                        	});
+			   }
+
+            function createWords(cp){
+
+                var titles=[];
+                var scores=[];
+
+                for (var key in cp){ 
+                    if (cp.hasOwnProperty(key)) {
+                        titles.push(cp[key][0])
+                        scores.push(cp[key][1])
+                    }
+                }
+                var sum = scores.reduce(function(a, b) {return a + b;});
+                var min = Math.min.apply(null, scores)
+                var max = Math.max.apply(null, scores)
+
+                scores=scores.map(function(a){return (a/sum)*90+10});
+                var words=[];
+                for (var i = 0; i<titles.length; i++) {
+                    words.push({"text":titles[i], "size": scores[i]})
+                }
+                return words;
+            }               
+
+            function sortWords(words){
+                words.sort(function compare(a,b) {return b['size']-a['size'] })   
+                wordsText=[];
+                for (var i = 0; i<words.length; i++) {
+                    wordsText.push(words[i]['text']);
+                }                
+                return wordsText;             
+            }
+
+            function uploadfile (){
+
+            	$('#batchsimbutton').attr('disabled', true);
+                $('#batchsimdiv').hide();
+                $('#batchsimprogdiv').show();
+
+
+                var direction = $('input[name=direction]:checked').val();                 
+                var task=$('input[name=task]:checked').val()
+
+                var formData = new FormData();
+                formData.append("file", $("#simfileinput")[0].files[0]);
+                formData.append("dir", direction);    
+                formData.append("task", task);    
+                formData.append("cutoff", $("#cutoff").val());    
+ 
+                $.ajax({
+                    url: 'cgi-bin/cgi-batchsim.py',  //Server script to process data
+                    type: 'POST',
+                    xhr: function() {  // Custom XMLHttpRequest
+                        var myXhr = $.ajaxSettings.xhr();
+                        if(myXhr.upload){ // Check if upload property exists
+                            myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
+                        }
+                        return myXhr;
+                    },
+                    //Ajax events
+                    // Form data
+                    data: formData,
+                    //Options to tell jQuery not to process data or worry about content-type.
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (data, textstatus){
+                         $('#batchsimbutton').attr('disabled', false);
+                         $('#batchsimdiv').show();
+                         $('#batchsimprogdiv').hide();
+                         //$('#batchsimdiv').text(data)
+                         var win = window.open(data["redirect"], '_blank');
+                         //win.focuse();
+                        
+                    },
+                    error: function(xhr, textStatus, errorThrown){
+                        $('#batchsimdiv').text("error: " + xhr.responseText + "\n" + textStatus);
+                        $('#batchsimdiv').show()
+                    }
+                });
+            }
+            function progressHandlingFunction(e){
+            //                    if(e.lengthComputable){
+            //                        $('progress').attr({value:e.loaded,max:e.total});
+            //                    }
+            }            
+            });
+        </script>	
+
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script src="bootstrap-3.3.4-dist/assets/js/ie10-viewport-bug-workaround.js"></script>
+    </body>
+</html>
