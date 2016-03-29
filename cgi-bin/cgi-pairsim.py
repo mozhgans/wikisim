@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/home/sajadi/anaconda2/bin/python
 
 from calcsim import *
 import json
@@ -29,11 +29,25 @@ if cutoff is not None:
 	cutoff = None if cutoff.lower()=="all" else int(cutoff)
 
 if task == 'emb':
-	em = conceptrep(title2id(c1), direction, get_titles=(viz=='true'),cutoff=cutoff)
+	id1=title2id(c1);
+	if id1 is None:
+		print json.dumps({"err": '%s not found in wikipedia, check if this url exist: "en.wikipedia.org/wiki/%s"' % (c1,c1)});
+		exit();	
+	em = conceptrep(id1, direction, get_titles=(viz=='true'),cutoff=cutoff)
 	print json.dumps({"em": em});
 	exit();
 
-sim=calcsim(title2id(c1), title2id(c2), direction)
+id1=title2id(c1);
+if id1 is None:
+	print json.dumps({"err": '%s not found in wikipedia, check if this url exist: "en.wikipedia.org/wiki/%s"' % (c1,c1)});
+	exit();	
+
+id2=title2id(c2);
+if id2 is None:
+	print json.dumps({"err": '%s not found in wikipedia, check if this url exist: "en.wikipedia.org/wiki/%s"' % (c2,c2)});
+	exit();	
+
+sim=getsim(title2id(c1), title2id(c2), 'rvspagerank', direction)
 
 
 if viz is None or viz=='false':

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/home/sajadi/anaconda2/bin/python
 
 import cgi, os
 import cgitb; cgitb.enable()
@@ -85,7 +85,7 @@ log('cutoff%s', cutoff);
 
 
 if task == 'sim':
-    getsim_file(infn, outfn, direction);
+    getsim_file(infn, outfn, 'rvspagerank', direction);
 elif task == 'emb':
     getembed_file(infn, outfn, direction, cutoff=cutoff);
 

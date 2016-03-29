@@ -38,7 +38,7 @@ CREATE TABLE `redirect` (
 --
 
 /*!40000 ALTER TABLE `redirect` DISABLE KEYS */;
--e 
+
 Load DATA INFILE '/users/grad/sajadi/backup/projectsarchived/Datasets/wikipedia/20151002/enwiki-20151002-redirect.main.tsv' INTO TABLE redirect CHARACTER SET binary FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\'';
 
 /*!40000 ALTER TABLE `redirect` ENABLE KEYS */;

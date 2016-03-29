@@ -1,5 +1,3 @@
 *.pyc
 .svn
-tmp
-log.txt
-
+*draft*

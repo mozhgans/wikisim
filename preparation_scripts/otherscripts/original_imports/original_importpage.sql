@@ -49,7 +49,7 @@ CREATE TABLE `page` (
 --
 
 /*!40000 ALTER TABLE `page` DISABLE KEYS */;
--e 
+
 Load DATA INFILE '/users/grad/sajadi/backup/projectsarchived/Datasets/wikipedia/20151002/enwiki-20151002-page.main.tsv' INTO TABLE page CHARACTER SET binary FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\'';
 
 /*!40000 ALTER TABLE `page` ENABLE KEYS */;

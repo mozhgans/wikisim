@@ -39,7 +39,7 @@ CREATE TABLE `category` (
 --
 
 /*!40000 ALTER TABLE `category` DISABLE KEYS */;
--e 
+
 Load DATA INFILE '/users/grad/sajadi/backup/projectsarchived/Datasets/wikipedia/20151002/enwiki-20151002-category.main.tsv' INTO TABLE category CHARACTER SET binary FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\'';
 
 /*!40000 ALTER TABLE `category` ENABLE KEYS */;

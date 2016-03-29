@@ -1,7 +1,8 @@
+# uncomment
 import itertools
 import scipy as sp
 import os
-#Some Utility Functions
+
 import datetime
 
 def readds(url):    
@@ -11,8 +12,8 @@ def readds(url):
 def logres(outfile, instr, *params):
     outstr = instr % params;
     with open(outfile, 'a') as f:
-        f.write(str(datetime.datetime.now()) + "\t" + outstr + '\n');        
-      
+        f.write(str(datetime.datetime.now()) + "\t" + outstr + '\n');          
+        
 def log(instr, *params):
     logres(logfile, instr, *params)
 

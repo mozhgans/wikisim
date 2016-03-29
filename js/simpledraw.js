@@ -17,7 +17,7 @@ function simpledraw(word_array, eid) {
 var fill = d3.scale.category20();
 
 var layout = d3.layout.cloud()
-    .size([500, 500])
+    .size([450, 500])
     .words(word_array)
     .padding(5)
     .rotate(function() { return 0; })
