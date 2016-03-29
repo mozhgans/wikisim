@@ -185,7 +185,7 @@ def getneighbors(wid, direction):
         array([[row1,col1],[row2, col2]]). This form is flexible for general use or be converted to scipy.sparse 
         formats
     """
-    log('getneighbors started, wid = %s, direction = %s', wid, direction)
+    log('[getneighbors started]\twid = %s, direction = %s', wid, direction)
     if id2title(wid) is None:
         return (), sp.array([])
     
@@ -213,7 +213,7 @@ def getneighbors(wid, direction):
     #links = tuple((id2row(u), id2row(v)) for u, v in links if (u in id2row) and (v in id2row));
     links = sp.array([[id2row[u], id2row[v]] for u, v in links if (u in id2row) and (v in id2row)]);
     sys.stdout.flush()
-    log('getneighbors finished')
+    log('[getneighbors]\tfinished')
     return (neighids,links)
 
 def clearcache():
@@ -221,7 +221,7 @@ def clearcache():
     _cursor.execute("delete  from pagelinksorderedout");
 
 def checkcache(wid, direction):
-    log('checkcache started, wid = %s, direction = %s', wid, direction)
+    log('[checkcache started]\twid = %s, direction = %s', wid, direction)
     
     em=None
     
@@ -236,12 +236,12 @@ def checkcache(wid, direction):
     row = _cursor.fetchone();
     if row is not None:
         em=defaultdict(int, pickle.loads(row[0]))
-    log('checkcache finished')
+    log('[checkcache]\tfinished')
     return em
 
 
 def cachescores(wid, em, direction):
-    log('cachescores started, wid = %s, direction = %s', wid, direction)
+    log('[cachescores started]\twid = %s, direction = %s', wid, direction)
 
     if direction == DIR_IN: 
         tablename = 'pagelinksorderedin';

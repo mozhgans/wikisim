@@ -33,18 +33,19 @@ form = cgi.FieldStorage()
 # Get filename here.
 
 fileitem = form['file']
+jobid = form.getvalue('jobid')
 
 #Test if the file was uploaded
 if fileitem.filename:
+
     # strip leading path from file name to avoid 
     # directory traversal attacks
     fn = os.path.basename(fileitem.filename)
     fnbase, fnext = os.path.splitext(fn);
     # sudo chown www-data tmp
-    timestr = time.strftime("%Y%m%d-%H%M%S")
 
-    infn=os.path.join(tmpdir, timestr+'-'+fn)
-    outfn_rel= os.path.join('tmp', timestr+'-'+fnbase+'.out'+fnext)
+    infn=os.path.join(tmpdir, jobid+'-'+fn)
+    outfn_rel= os.path.join('tmp', jobid+'-'+fnbase+'.out'+fnext)
     outfn=      os.path.join(outdir, outfn_rel)
 
     with open(infn, 'wb') as f:
@@ -69,7 +70,7 @@ newhtml="""
                 	until the results are posted
                 </p>
             </div>            
-        """.format(timestr, infn, datetime.datetime.now());
+        """.format(jobid, infn, datetime.datetime.now());
 new_tag = soup(newhtml, 'lxml')
 new_tag=new_tag.body.next
 resdiv.append(new_tag)
@@ -113,7 +114,7 @@ newhtml="""
                 <a href={2}>{3}
                 </a>
            </div>            
-        """.format(timestr, datetime.datetime.now(), outfn_rel, outfn_rel);
+        """.format(jobid, datetime.datetime.now(), outfn_rel, outfn_rel);
 new_tag = soup(newhtml)
 new_tag=new_tag.body.next
 

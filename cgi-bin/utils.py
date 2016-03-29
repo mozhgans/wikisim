@@ -12,7 +12,7 @@ def readds(url):
 def logres(outfile, instr, *params):
     outstr = instr % params;
     with open(outfile, 'a') as f:
-        f.write(str(datetime.datetime.now()) + "\t" + outstr + '\n');          
+        f.write("[%s]\t%s\n" % (str(datetime.datetime.now()) , outstr));          
         
 def log(instr, *params):
     logres(logfile, instr, *params)

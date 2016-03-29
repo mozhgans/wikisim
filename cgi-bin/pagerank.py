@@ -44,7 +44,7 @@ def pagerank_sparse(G, p=0.85, personalize=None, reverse=False):
         Pagerank Scores for the nodes
      
     """
-    log('pagerank_sparse started')
+    log('[pagerank_sparse]\tstarted')
 
     if not reverse:
         G=G.T;
@@ -66,7 +66,7 @@ def pagerank_sparse(G, p=0.85, personalize=None, reverse=False):
     X1 = sprs.linalg.spsolve((I - p*G.dot(D)), e);
 
     X1=X1/sum(X1)
-    log('pagerank_sparse finished')
+    log('[pagerank_sparse]\tfinished')
     return X1
 def pagerank_sparse_power(G, p=0.85, max_iter = 100, personalize=None, reverse=False):
     """ Calculates pagerank given a csr graph
@@ -83,7 +83,7 @@ def pagerank_sparse_power(G, p=0.85, max_iter = 100, personalize=None, reverse=F
         Pagerank Scores for the nodes
      
     """
-    log('pagerank_sparse_power started')
+    log('[pagerank_sparse_power]\tstarted')
     
     if not reverse: 
         G=G.T;
@@ -116,5 +116,5 @@ def pagerank_sparse_power(G, p=0.85, max_iter = 100, personalize=None, reverse=F
             break;
     x = x/sum(x)
     
-    log('pagerank_sparse_power finished')
+    log('[pagerank_sparse_power]\tfinished')
     return x.reshape(-1) 

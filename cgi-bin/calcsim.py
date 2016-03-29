@@ -33,13 +33,13 @@ def concept_embedding(wid, direction):
         The neighbor ids, their scores and the whole neighorhood graph (for visualization purposes)
         
     """
-    log('concept_embedding started, wid = %s, direction = %s', wid, direction)
+    log('[concept_embedding started]\twid = %s, direction = %s', wid, direction)
 
     if direction == DIR_IN or direction==DIR_OUT:
         em = _concept_embedding_io(wid, direction)
     if direction == DIR_BOTH:
         em = _concept_embedding_both(wid, direction)
-    log('concept_embedding finished')
+    log('[concept_embedding]\tfinished')
     return em
     
 def _concept_embedding_io(wid, direction):
@@ -211,7 +211,7 @@ def getsim_file(infilename, outfilename, method='rvspagerank', direction=None):
     Returns:
         vector of scores, and Spearmans's correlation if goldstandard is given
     """
-    log('getsim_file started: %s -> %s', infilename, outfilename)
+    log('[getsim_file started]\t%s -> %s', infilename, outfilename)
     outfile = open(outfilename, 'w');
     dsdata=readds(infilename);
     gs=[];
@@ -236,7 +236,7 @@ def getsim_file(infilename, outfilename, method='rvspagerank', direction=None):
     outfile.close();
     if gs:
         spcorr = sp.stats.spearmanr(scores, gs);
-    log('getsim_file finished')
+    log('[getsim_file]\tfinished')
     return scores, spcorr
 
 def conceptrep(wid, direction, get_titles=True, cutoff=None):
@@ -254,7 +254,7 @@ def conceptrep(wid, direction, get_titles=True, cutoff=None):
         graph for visualization purposes. 
     """
     
-    log('conceptrep started, wid = %s, direction = %s', wid, direction)
+    log('[conceptrep started]\twid = %s, direction = %s', wid, direction)
     
     em=concept_embedding(wid, direction);    
     if em is None:
@@ -267,7 +267,7 @@ def conceptrep(wid, direction, get_titles=True, cutoff=None):
         
     if get_titles:
         em=defaultdict(int, {wid:(title, em[wid]) for wid,title in zip(ids,ids2title(ids))})
-    log ('conceptrep finished')
+    log ('[conceptrep]\tfinished')
     return em
     
 
@@ -283,7 +283,7 @@ def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=N
 
     """
     
-    log('getembed_file started: %s -> %s', infilename, outfilename)
+    log('[getembed_file started]\t%s -> %s', infilename, outfilename)
     outfile = open(outfilename, 'w');
     dsdata=readds(infilename);
     scores=[];
@@ -295,4 +295,4 @@ def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=N
             em=conceptrep(wid, direction, get_titles, cutoff)
         outfile.write(row[0]+"\t"+json.dumps(em)+"\n")
     outfile.close();
-    log('getembed_file finished')
+    log('[getembed_file]\tfinished')
