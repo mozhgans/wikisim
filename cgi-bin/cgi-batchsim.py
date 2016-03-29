@@ -8,17 +8,23 @@ import time
 import sys
 
 from calcsim import *
+from shutil import copyfile
 import json
 
 
 log('cgi-batchsim started');
 print "Content-type:application/json\r\n\r\n"
 
-if not os.path.exists('../tmp'):
-    os.makedirs('../tmp')
-    os.chmod('../tmp', 0777)    
-    log('directory generated');
+tmpdir = os.path.join(outdir, 'tmp')
+if not os.path.exists(tmpdir):
+    os.makedirs(tmpdir)
+    os.chmod(tmpdir, 0777)    
+    log('tmp directory generated');
 
+resultfile = os.path.join(outdir, 'results.html')
+if not os.path.exists(resultfile):
+    copyfile(os.path.join(outdir, 'results.orig.html'),resultfile)
+    os.chmod(resultfile, 0777)    
 
 
 form = cgi.FieldStorage()
@@ -37,9 +43,9 @@ if fileitem.filename:
     # sudo chown www-data tmp
     timestr = time.strftime("%Y%m%d-%H%M%S")
 
-    infn=os.path.join('../tmp', timestr+'-'+fn)
+    infn=os.path.join(tmpdir, timestr+'-'+fn)
     outfn_rel= os.path.join('tmp', timestr+'-'+fnbase+'.out'+fnext)
-    outfn=      os.path.join('..', outfn_rel)
+    outfn=      os.path.join(outdir, outfn_rel)
 
     with open(infn, 'wb') as f:
         f.write(fileitem.file.read())   
@@ -52,9 +58,9 @@ else:
 import datetime
 from bs4 import BeautifulSoup as soup
 
-with open('../results.html','r') as f:
+with open(resultfile,'r') as f:
     html=f.read()
-sp = soup(html)
+sp = soup(html,'lxml')
 resdiv= sp.find("div", {"id": "resultsdiv"})
 newhtml="""
             <div class="alert alert-warning " role="alert">
@@ -64,10 +70,10 @@ newhtml="""
                 </p>
             </div>            
         """.format(timestr, infn, datetime.datetime.now());
-new_tag = soup(newhtml)
+new_tag = soup(newhtml, 'lxml')
 new_tag=new_tag.body.next
 resdiv.append(new_tag)
-with open('../results.html','w') as f:
+with open(resultfile,'w') as f:
     f.write(sp.prettify())
 
 # Starting the process
@@ -94,7 +100,7 @@ elif task == 'emb':
 
 # Update result file
 
-with open('../results.html','r') as f:
+with open(resultfile,'r') as f:
     html=f.read()
 
 sp = soup(html)
@@ -112,10 +118,10 @@ new_tag = soup(newhtml)
 new_tag=new_tag.body.next
 
 resdiv.append(new_tag)
-with open('../results.html','w') as f:
+with open(resultfile,'w') as f:
     f.write(sp.prettify())
 
 import json
-print json.dumps({"redirect":"results.html"})
+print json.dumps({"redirect":"out/results.html"})
 
 

@@ -17,10 +17,12 @@ def logres(outfile, instr, *params):
 def log(instr, *params):
     logres(logfile, instr, *params)
 
-logfile='log.txt';
+outdir = '../out'    
+logfile=os.path.join(outdir, 'log.txt');
 if not os.path.exists(logfile):
     log('log created') 
     os.chmod(logfile, 0777)    
+    
     
 def timeformat(sec):
     return datetime.timedelta(seconds=sec)
