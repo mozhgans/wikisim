@@ -3,13 +3,13 @@
 echo "Imporintg Started..."
 date
 
-cat importpage.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u root --password=$3 --local-infile=1 enwiki$2  
+cat importpage.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
 echo "page done"
 
-cat importpagelinks.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u root --password=$3 --local-infile=1 enwiki$2  
+cat importpagelinks.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
 echo "pageslinks done"
 
-cat importredirect.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u root --password=$3 --local-infile=1 enwiki$2  
+cat importredirect.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
 echo "redirect done"
 
 if [ $2 -eq 20120403 ]
@@ -19,21 +19,21 @@ date
 exit 0
 fi
 
-cat importcategory.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u root --password=$3 --local-infile=1 enwiki$2  
+cat importcategory.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
 echo "category done"
 
-cat importcategorylinks.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2	| mysql -u root --password=$3 --local-infile=1 enwiki$2  
+cat importcategorylinks.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
 echo "categorylinks done"
 
-cat createpagelinksorderedin.sql 										| mysql -u root --password=$3 --local-infile=1 enwiki$2  
+cat createpagelinksorderedin.sql 										| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
 echo "createpagelinksorderedin done"
 
-cat createpagelinksorderedout.sql 										| mysql -u root --password=$3 --local-infile=1 enwiki$2  
+cat createpagelinksorderedout.sql 										| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
 echo "createpagelinksorderedout done"
 
 
 
-#cat importexternallinks.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u root --password=$3 --local-infile=1 enwiki$2  
+#cat importexternallinks.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
 #echo "externallinks done"
 
 echo 'Done...'
