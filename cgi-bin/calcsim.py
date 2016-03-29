@@ -220,14 +220,14 @@ def getsim_file(infilename, outfilename, method='rvspagerank', direction=None):
     spcorr=None;
     for row in dsdata:   
         log('processing %s, %s', row[0], row[1])
-        if (row[0]=='None') or (row[1]=='None'):
+        if (row[0]=='null') or (row[1]=='null'):
             continue;
         if len(row)>2: 
             gs.append(row[2]);
             
         wid1 = title2id(row[0])
         wid2 = title2id(row[1])
-        if (wid1=='None') or (wid2=='None'):
+        if (wid1 is None) or (wid2 is None):
             sim=0;
         else:
             sim=getsim(wid1, wid2, method, direction);
@@ -289,7 +289,7 @@ def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=N
     scores=[];
     for row in dsdata:        
         wid = title2id(row[0])
-        if wid=='None':
+        if wid is None:
             em='';
         else:
             em=conceptrep(wid, direction, get_titles, cutoff)

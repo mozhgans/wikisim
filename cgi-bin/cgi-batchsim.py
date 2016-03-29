@@ -104,7 +104,7 @@ elif task == 'emb':
 with open(resultfile,'r') as f:
     html=f.read()
 
-sp = soup(html)
+sp = soup(html,'lxml')
 resdiv= sp.find("div", {"id": "resultsdiv"})
 newhtml="""
             <div class="alert alert-success " role="alert">
@@ -115,7 +115,7 @@ newhtml="""
                 </a>
            </div>            
         """.format(jobid, datetime.datetime.now(), outfn_rel, outfn_rel);
-new_tag = soup(newhtml)
+new_tag = soup(newhtml,'lxml')
 new_tag=new_tag.body.next
 
 resdiv.append(new_tag)

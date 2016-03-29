@@ -19,9 +19,11 @@ _cursor = _db.cursor()
 WIKI_SIZE = 10216236;
 
 def close():
-    _cursor.close();
+    global _db, _cursor;
+    if _cursor is not None: 
+        _cursor.close();
+        _db.close();
     _cursor=_db=None;
-    _db.close();
 def reopen():
     global _db, _cursor;
     if _db is None:
