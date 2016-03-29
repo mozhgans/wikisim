@@ -1,3 +1,4 @@
 *.pyc
 .svn
 *draft*
+.ipynb_checkpoints
