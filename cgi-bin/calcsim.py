@@ -1,15 +1,26 @@
+"""Calculating Relatedness."""
 # uncomment
+
 from __future__ import division
 
-#Calculating Relatedness
-from wikipedia import * # uncomment
-from pagerank import * # uncomment
-from utils import * # uncomment
 
 from collections import defaultdict
 from scipy import stats
 import json
 import math
+
+from wikipedia import * # uncomment
+from pagerank import * # uncomment
+from utils import * # uncomment
+
+__author__ = "Armin Sajadi"
+__copyright__ = "Copyright 215, The Wikisim Project"
+__credits__ = ["Armin Sajadi", "Evangelo Milios", "Armin Sajadi"]
+__license__ = "GPL"
+__version__ = "1.0.1"
+__maintainer__ = "Armin Sajadi"
+__email__ = "sajadi@cs.dal.ca"
+__status__ = "Development"
 
 def _unify_ids_scores(*id_sc_tuple):
     uids, id2in = e2i(*(ids for ids, _ in id_sc_tuple));
@@ -51,7 +62,7 @@ def _concept_embedding_io(wid, direction):
     (ids, links) = getneighbors(wid, direction);
     if not ids:
         return None;
-    scores = pagerank_sparse(create_csr(links), reverse=True)
+    scores = pagerank_sparse_power(create_csr(links), reverse=True)
      
     em=defaultdict(int,zip(ids, scores));    
     cachescores(wid, em, direction);
@@ -167,7 +178,7 @@ def getsim_emb(id1,id2, direction):
     em1 = concept_embedding(id1, direction);
     em2 = concept_embedding(id2, direction);
     if (em1 is None) or (em2 is None):
-        return None;
+        return 0;
     
     ids=list(set(em1.keys()).union(em2.keys()))
     sc1=[em1[wid] for wid in ids]

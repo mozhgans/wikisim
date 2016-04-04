@@ -1,9 +1,20 @@
+"""Utility functions"""
 # uncomment
+
 import itertools
 import scipy as sp
 import os
 
 import datetime
+
+__author__ = "Armin Sajadi"
+__copyright__ = "Copyright 215, The Wikisim Project"
+__credits__ = ["Armin Sajadi", "Evangelo Milios", "Armin Sajadi"]
+__license__ = "GPL"
+__version__ = "1.0.1"
+__maintainer__ = "Armin Sajadi"
+__email__ = "sajadi@cs.dal.ca"
+__status__ = "Development"
 
 def readds(url):    
     data = sp.genfromtxt(url, dtype=None)

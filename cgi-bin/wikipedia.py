@@ -1,6 +1,6 @@
+"""A General Class to interact with Wiki datasets"""
 # uncomment
 
-# A General Class to interact with Wiki datasets
 import MySQLdb
 import sys;
 import os
@@ -10,6 +10,18 @@ import cPickle as pickle
 
 from utils import * # uncomment
 
+__author__ = "Armin Sajadi"
+__copyright__ = "Copyright 215, The Wikisim Project"
+__credits__ = ["Armin Sajadi", "Evangelo Milios", "Armin Sajadi"]
+__license__ = "GPL"
+__version__ = "1.0.1"
+__maintainer__ = "Armin Sajadi"
+__email__ = "sajadi@cs.dal.ca"
+__status__ = "Development"
+
+
+DISABLE_CACHE=False;
+MAX_GRAPH_SIZE=30000
 
 DIR_IN=0;
 DIR_OUT=1;
@@ -188,42 +200,51 @@ def getneighbors(wid, direction):
         formats
     """
     log('[getneighbors started]\twid = %s, direction = %s', wid, direction)
-    if id2title(wid) is None:
-        return (), sp.array([])
     
     idsquery = """(select  {0} as lid) union {1}""".format(wid,_getlinkedpages_query(wid,direction));
 
     _cursor.execute(idsquery);
-    sys.stdout.flush()
 
 
     rows = _cursor.fetchall();
+    if len(rows)<2:
+        return (), sp.array([])
+    
+    
     neighids = tuple(r[0] for r in rows);
+    if len(neighids)>MAX_GRAPH_SIZE is None:
+        log('[getneighbors]\tGraph with %s nodes is too big, exiting', len(neighids))
+        return (), sp.array([])
+
     
     id2row = dict(zip(neighids, range(len(neighids))))
-    sys.stdout.flush()
 
     neighbquery=  """select lid,pl_to as n_l_to from
                      ({0}) a  inner join
                      pagelinks on lid=pl_from""".format(idsquery);
 
     links=_cursor.execute(neighbquery);
-    sys.stdout.flush()
 
     links = _cursor.fetchall();
     
     #links = tuple((id2row(u), id2row(v)) for u, v in links if (u in id2row) and (v in id2row));
     links = sp.array([[id2row[u], id2row[v]] for u, v in links if (u in id2row) and (v in id2row)]);
-    sys.stdout.flush()
+    
+    log('Graph extracted, %s nodes and %s linkes', len(neighids), len(links) )
     log('[getneighbors]\tfinished')
     return (neighids,links)
 
 def clearcache():
+    if DISABLE_CACHE:
+        return;
     _cursor.execute("delete  from pagelinksorderedin");
     _cursor.execute("delete  from pagelinksorderedout");
 
 def checkcache(wid, direction):
     log('[checkcache started]\twid = %s, direction = %s', wid, direction)
+    if DISABLE_CACHE:
+        log('[checkcache]\tDisabled')
+        return None
     
     em=None
     
@@ -244,6 +265,9 @@ def checkcache(wid, direction):
 
 def cachescores(wid, em, direction):
     log('[cachescores started]\twid = %s, direction = %s', wid, direction)
+    if DISABLE_CACHE:
+        log('[cachescores]\tDisabled')
+        return
 
     if direction == DIR_IN: 
         tablename = 'pagelinksorderedin';

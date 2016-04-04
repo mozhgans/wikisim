@@ -1,17 +1,25 @@
+"""Two implementations of PageRank.
+
+Pythom implementations of Matlab original in Cleve Moler, Experiments with MATLAB.
+"""
 # uncomment
 
-# Two implementations of PageRank
 import scipy as sp
 import scipy.sparse as sprs
 import scipy.spatial
 import scipy.sparse.linalg 
-#from scipy.sparse.linalg import spsolve
-#import networkx as nx
-#import numpy as np;
-#example 1
-
 
 from utils import * # uncomment
+
+__author__ = "Armin Sajadi"
+__copyright__ = "Copyright 215, The Wikisim Project"
+__credits__ = ["Armin Sajadi", "Evangelo Milios", "Armin Sajadi"]
+__license__ = "GPL"
+__version__ = "1.0.1"
+__maintainer__ = "Armin Sajadi"
+__email__ = "sajadi@cs.dal.ca"
+__status__ = "Development"
+
 
 def create_csr(Z):
     """ Creates a csr presentation from 2darray presentation and 
@@ -107,8 +115,8 @@ def pagerank_sparse_power(G, p=0.85, max_iter = 100, personalize=None, reverse=F
     oldx = sp.zeros((n,1));
     
     iteration = 0
-    start = time.time()    
-    while sp.linalg.norm(x-oldx) > 0.01:
+    
+    while sp.linalg.norm(x-oldx) > 0.001:
         oldx = x
         x = G.dot(x) + e.dot(z.dot(x))
         iteration += 1
@@ -116,5 +124,6 @@ def pagerank_sparse_power(G, p=0.85, max_iter = 100, personalize=None, reverse=F
             break;
     x = x/sum(x)
     
+    log('# of iterations: %s, normdiff: %s', iteration, sp.linalg.norm(x-oldx))
     log('[pagerank_sparse_power]\tfinished')
     return x.reshape(-1) 

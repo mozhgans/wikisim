@@ -26,7 +26,7 @@ CREATE TABLE `pagelinks` (
   `pl_from` int(8) unsigned NOT NULL DEFAULT '0',
   `pl_to` int(8) unsigned NOT NULL DEFAULT '0',
   UNIQUE KEY `pl_from` (`pl_from`,`pl_to`),
-  KEY `pl_to` (`pl_to`)
+  UNIQUE KEY `pl_to` (`pl_to`,`pl_from`)
 ) ENGINE=MyISAM DEFAULT CHARSET=binary;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
