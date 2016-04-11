@@ -299,11 +299,11 @@ def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=N
     dsdata=readds(infilename);
     scores=[];
     for row in dsdata:        
-        wid = title2id(row[0])
+        wid = title2id(row)
         if wid is None:
             em='';
         else:
             em=conceptrep(wid, direction, get_titles, cutoff)
-        outfile.write(row[0]+"\t"+json.dumps(em)+"\n")
+        outfile.write(row+"\t"+json.dumps(em)+"\n")
     outfile.close();
     log('[getembed_file]\tfinished')

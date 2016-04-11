@@ -95,7 +95,7 @@ log('cutoff%s', cutoff);
 if task == 'sim':
     getsim_file(infn, outfn, 'rvspagerank', direction);
 elif task == 'emb':
-    getembed_file(infn, outfn, direction, cutoff=cutoff);
+    getembed_file(infn, outfn, direction, get_titles=True, cutoff=cutoff);
 
 
 
