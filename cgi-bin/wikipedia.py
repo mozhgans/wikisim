@@ -96,6 +96,11 @@ def title2id(title):
         wid = getredir_id(row[0]) if row[3] else row[0];
     return wid;
 
+def is_ambiguous(wid):
+    _cursor.execute("""SELECT * FROM `categorylinks` WHERE `categorylinks`.cl_from=%s and `categorylinks`.cl_to=19204864;""", (wid,))
+    row= _cursor.fetchone();
+    return not (row is None)    
+
 def getredir_id(wid):
     """ Returns the target of a redirected page 
 
