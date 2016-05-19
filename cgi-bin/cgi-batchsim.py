@@ -1,5 +1,5 @@
 #!/home/sajadi/anaconda2/bin/python
-#/users/grad/sajadi/backup/anconda2/bin/python
+#/users/grad/sajadi/backup/anaconda2/bin/python
 
 import cgi, os
 import cgitb; cgitb.enable()

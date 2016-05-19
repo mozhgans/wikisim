@@ -17,7 +17,6 @@ for file in *; do
 
   took=$(curl -s -X post -H 'Content-Type: application/json' $sol/$index/update?commit=true -d @$file)
   printf '%s\n' $took
-  #[ "x$took" = "x" ] || rm $file
 done
 
 echo "done"

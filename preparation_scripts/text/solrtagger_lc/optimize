@@ -1,8 +1,0 @@
-export sol=http://localhost:8983/solr
-export index=enwikianchors20160305_lc
-
-echo "optimizing Started..."
-date
-curl -s -X post -H 'Content-Type: application/json' $sol/$index/update?optimize=true
-echo "done"
-date
