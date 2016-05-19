@@ -5,7 +5,8 @@ import MySQLdb
 import sys;
 import os
 import scipy as sp
-from collections import defaultdict
+import pandas as pd
+#from collections import defaultdict
 import cPickle as pickle
 
 from utils import * # uncomment
@@ -26,7 +27,7 @@ MAX_GRAPH_SIZE=30000
 DIR_IN=0;
 DIR_OUT=1;
 DIR_BOTH=2;
-_db = MySQLdb.connect(host="127.0.0.1",port=3306,user='root',passwd="emilios",db="enwiki20140102")
+_db = MySQLdb.connect(host="127.0.0.1",port=3307,user='root',passwd="emilios",db="enwiki20160305")
 _cursor = _db.cursor()
 WIKI_SIZE = 10216236;
 
@@ -39,7 +40,7 @@ def close():
 def reopen():
     global _db, _cursor;
     if _db is None:
-        _db = MySQLdb.connect(host="127.0.0.1",port=3306,user='root',passwd="emilios",db="enwiki20140102")
+        _db = MySQLdb.connect(host="127.0.0.1",port=3306,user='root',passwd="emilios",db="enwiki20160305")
         _cursor = _db.cursor()
         
 
@@ -159,6 +160,39 @@ def synonymring_titles(wid):
         rows = tuple(r[0] for r in rows)
     return rows;
 
+
+def anchor2concept(anchor):
+    """ Returns the targets of an anchor text
+
+    Args:
+        anchor: anchor
+        
+    Returns:
+        The list of the titles of the linked pages
+    """
+    _cursor.execute("""select anchors.id from anchors inner join page on anchors.id=page.page_id where anchors.anchor=%s;""", (anchor,))
+    rows =_cursor.fetchall()
+    if rows:
+        rows = tuple(r[0] for r in rows)
+    return rows
+
+
+def id2anchor(wid):
+    """ Returns the targets of an anchor text
+
+    Args:
+        anchor: anchor
+        
+    Returns:
+        The list of the titles of the linked pages
+    """
+    _cursor.execute("""select anchor from anchors where id=%s""", (wid,))
+    rows =_cursor.fetchall()
+    if rows:
+        rows = tuple(r[0] for r in rows)
+    return rows
+
+
 def _getlinkedpages_query(id, direction):
     query="(SELECT {0} as lid FROM pagelinks where ({1} = {2}))"
     if direction == DIR_IN:
@@ -217,7 +251,7 @@ def getneighbors(wid, direction):
     
     
     neighids = tuple(r[0] for r in rows);
-    if len(neighids)>MAX_GRAPH_SIZE is None:
+    if len(neighids)>MAX_GRAPH_SIZE:
         log('[getneighbors]\tGraph with %s nodes is too big, exiting', len(neighids))
         return (), sp.array([])
 
@@ -263,7 +297,8 @@ def checkcache(wid, direction):
     _cursor.execute(query);
     row = _cursor.fetchone();
     if row is not None:
-        em=defaultdict(int, pickle.loads(row[0]))
+        values, index = pickle.loads(row[0])
+        em=pd.Series(values, index=index)
     log('[checkcache]\tfinished')
     return em
 
@@ -282,7 +317,7 @@ def cachescores(wid, em, direction):
         tablename = 'pagelinksorderedout';
         colname = 'out_neighb';
         
-    idscstr=pickle.dumps(em, pickle.HIGHEST_PROTOCOL);
+    idscstr = pickle.dumps((em.values.tolist(), em.index.values.tolist()), pickle.HIGHEST_PROTOCOL)
     _cursor.execute("""insert into %s values (%s,'%s');""" %(tablename, wid, _db.escape_string(idscstr)));
     
     

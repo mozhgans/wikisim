@@ -3,6 +3,7 @@
 
 import itertools
 import scipy as sp
+import pandas as pd
 import os
 
 import datetime
@@ -16,8 +17,8 @@ __maintainer__ = "Armin Sajadi"
 __email__ = "sajadi@cs.dal.ca"
 __status__ = "Development"
 
-def readds(url):    
-    data = sp.genfromtxt(url, dtype=None)
+def readds(url, usecols=None):    
+    data = pd.read_table(url, header=None, usecols=usecols)
     return data
 
 def logres(outfile, instr, *params):
@@ -31,6 +32,8 @@ def log(instr, *params):
 outdir = '../out'    
 logfile=os.path.join(outdir, 'log.txt');
 if not os.path.exists(logfile):
+    if not os.path.exists(outdir):
+        os.makedirs(outdir)
     log('log created') 
     os.chmod(logfile, 0777)    
     

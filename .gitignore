@@ -2,3 +2,5 @@
 .svn
 *draft*
 .ipynb_checkpoints
+*.me
+*~

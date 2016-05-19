@@ -14,7 +14,7 @@ This is a simple and step by step explanation of calculating semantic relatednes
 * Armin Sajadi,"Graph-Based Domain-Speciﬁc Semantic Relatedness from Wikipedia", Canadian AI 2014, LNAI 8436, pp. 381–386, 2014 [(bib)](../resrc/caai14.bib) [(pdf)](http://link.springer.com/chapter/10.1007%2F978-3-319-06483-3_42#)
 
 ### Public Resources
-* Weservice: (http://ares.research.cs.dal.ca/~sajadi/wikisim)
+* Weservice: (http://web.cs.dal.ca/~sajadi/wikisim/)
 * Source Code: (https://github.com/asajadi/wikisim)
 
 

@@ -1,26 +1,29 @@
 """ Evaluating the method on Semantic Relatedness Datasets."""
 
+#%load_ext autoreload
+#%autoreload
+
 import os
 import time;
-#D = sparse(k,k,1./c(k),n,n);
+import pandas as pd
 
-# %autoreload 1
 
-# %aimport wikipedia
-# %aimport visualize
-# from visualize import *
-# from wikipedia import *
+#%aimport wikipedia
+#%aimport calcsim
 from config import *
 from calcsim import *
 
 
-direction=DIR_OUT;
+print DISABLE_CACHE
+#clearcache()
+direction=DIR_IN;
 method = 'rvspagerank'
 initdirs(direction, 'rvspagerank')
 resfilename =  os.path.join(baseresdir, 'reslog.txt')
 
 dsfiles=('MC_28-edited.csv', 'RG-edited.csv', 'MiniMayoSRS-edited.csv', 'MayoSRS-edited.csv',
         'UMNSRS_relatedness-edited.csv', 'UMNSRS_similarity-edited.csv')
+dsfiles=('MiniMayoSRS-edited.csv', 'MayoSRS-edited.csv')
 start = time.time()
 for dsname in dsfiles:
     printflush ("Processing",dsname)

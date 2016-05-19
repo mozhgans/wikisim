@@ -4,7 +4,7 @@
 from __future__ import division
 
 
-from collections import defaultdict
+#from collections import defaultdict
 from scipy import stats
 import json
 import math
@@ -63,8 +63,7 @@ def _concept_embedding_io(wid, direction):
     if not ids:
         return None;
     scores = pagerank_sparse_power(create_csr(links), reverse=True)
-     
-    em=defaultdict(int,zip(ids, scores));    
+    em = pd.Series(scores, index=ids) 
     cachescores(wid, em, direction);
     return em
             
@@ -74,13 +73,7 @@ def _concept_embedding_both(wid, direction):
         out_em = _concept_embedding_io(wid, DIR_OUT )
         if (in_em is None) or (out_em is None):
             return None;
-        
-        ids=list(set(in_em.keys()).union(out_em.keys()))
-        in_sc=[in_em[wid] for wid in ids]
-        out_sc=[out_em[wid] for wid in ids]               
-        scores=([(x+y)/2 for x,y in zip(in_sc, out_sc)])
-
-        return defaultdict(int,zip(ids, scores))
+        return in_em.add(out_em, fill_value=0)/2
 
 def getsim_wlm(id1, id2):
     """ Calculates wlm (ngd) similarity between two concepts 
@@ -180,11 +173,8 @@ def getsim_emb(id1,id2, direction):
     if (em1 is None) or (em2 is None):
         return 0;
     
-    ids=list(set(em1.keys()).union(em2.keys()))
-    sc1=[em1[wid] for wid in ids]
-    sc2=[em2[wid] for wid in ids]               
-    
-    return 1-sp.spatial.distance.cosine(sp.array(sc1),sp.array(sc2));
+    em1, em2 = em1.align(em2, fill_value=0)
+    return 1-sp.spatial.distance.cosine(em1.values,em2.values);
 
 def getsim(id1,id2, method, direction=None):
     """ Calculates well-known similarity metrics between two concepts 
@@ -200,16 +190,22 @@ def getsim(id1,id2, method, direction=None):
     Returns:
         The similarity score        
     """
+    log('[getsim started]\method = %s, direction = %s, id1=%s, id2=%s', method, direction, id1, id2)
+    
     if method=='rvspagerank':
-        return getsim_emb(id1,id2, direction)
-    if method=='wlm':
-        return getsim_wlm(id1,id2)
-    if method=='cocit':
-        return getsim_cocit(id1,id2)
-    if method=='coup':
-        return getsim_coup(id1,id2)
-    if method=='ams':
-        return getsim_ams(id1,id2)
+        sim = getsim_emb(id1,id2, direction)
+    elif method=='wlm':
+        sim = getsim_wlm(id1,id2)
+    elif method=='cocit':
+        sim = getsim_cocit(id1,id2)
+    elif method=='coup':
+        sim = getsim_coup(id1,id2)
+    elif method=='ams':
+        sim = getsim_ams(id1,id2)
+    else:
+        sim=None
+    log('[getsim]\tfinished')
+    return sim
 
     
 def getsim_file(infilename, outfilename, method='rvspagerank', direction=None):
@@ -227,22 +223,21 @@ def getsim_file(infilename, outfilename, method='rvspagerank', direction=None):
     dsdata=readds(infilename);
     gs=[];
     scores=[];
-    #scores=[1-spatial.distance.cosine(vectors[row[0]],vectors[row[1]]) if (row[0] in vectors) and  (row[1] in vectors) else 0 for row in dsdata]
     spcorr=None;
-    for row in dsdata:   
-        log('processing %s, %s', row[0], row[1])
-        if (row[0]=='null') or (row[1]=='null'):
+    for row in dsdata.itertuples():   
+        log('processing %s, %s', row[1], row[2])
+        if (row[1]=='null') or (row[2]=='null'):
             continue;
-        if len(row)>2: 
-            gs.append(row[2]);
+        if len(row)>3: 
+            gs.append(row[3]);
             
-        wid1 = title2id(row[0])
-        wid2 = title2id(row[1])
+        wid1 = title2id(row[1])
+        wid2 = title2id(row[2])
         if (wid1 is None) or (wid2 is None):
             sim=0;
         else:
             sim=getsim(wid1, wid2, method, direction);
-        outfile.write("\t".join([str(row[0]), str(row[1]), str(sim)])+'\n')
+        outfile.write("\t".join([str(row[1]), str(row[2]), str(sim)])+'\n')
         scores.append(sim)
     outfile.close();
     if gs:
@@ -270,14 +265,15 @@ def conceptrep(wid, direction, get_titles=True, cutoff=None):
     em=concept_embedding(wid, direction);    
     if em is None:
         return None;
-    ids = em.keys();
+    
+    
+    #ids = em.keys();
+    
     if cutoff is not None:
-        ids = sorted(em.keys(), key=lambda k: em[k], reverse=True)
-        ids=ids[:cutoff]
-        em=defaultdict(int, {wid:em[wid] for wid in ids})
-        
+        em = em.sort_values(ascending=False)
+        em = em[:cutoff]
     if get_titles:
-        em=defaultdict(int, {wid:(title, em[wid]) for wid,title in zip(ids,ids2title(ids))})
+        em = pd.Series(zip(ids2title(em.index), em.values.tolist()), index=em.index)
     log ('[conceptrep]\tfinished')
     return em
     
@@ -296,14 +292,14 @@ def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=N
     
     log('[getembed_file started]\t%s -> %s', infilename, outfilename)
     outfile = open(outfilename, 'w');
-    dsdata=readds(infilename);
+    dsdata=readds(infilename, usecols=[0]);
     scores=[];
-    for row in dsdata:        
-        wid = title2id(row)
+    for row in dsdata.itertuples():        
+        wid = title2id(row[1])
         if wid is None:
-            em='';
+            em=pd.Series();
         else:
             em=conceptrep(wid, direction, get_titles, cutoff)
-        outfile.write(row+"\t"+json.dumps(em)+"\n")
+        outfile.write(row[1]+"\t"+em.to_json()+"\n")
     outfile.close();
     log('[getembed_file]\tfinished')
