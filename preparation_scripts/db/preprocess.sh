@@ -1,6 +1,7 @@
 #Automatic constructing databases, 
 
-#input: $1 mysql user, $2: mysql password
+# Usage:
+# bash preprocess.sh <mysql user> <mysql password>
 
 # Download wikipedia dumps to ~/Downloads/wikidumps, make sure it exists
 bash download.sh
@@ -15,5 +16,6 @@ bash parsdumps.sh
 bash setupmysql.sh $1 $2
 
 # Start importing
-bash startimport.sh $1 $2
+mysql -u $1 -p$2 -e 'CREATE SCHEMA `enwikilast` DEFAULT CHARACTER SET binary;'
+./importall  ~/Downloads/wikidumps last $1 $2
 

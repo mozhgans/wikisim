@@ -74,6 +74,7 @@ def process():
         if not line:
             continue
         if re.match(rend,line):
+            # If you want to check the title, make sure to encode!
             if textlist and (id2title(wid) is not None):
                 opening_ann, opening_text = replacelinks(opening_text)
                 ann,text = replacelinks("\n".join(textlist))

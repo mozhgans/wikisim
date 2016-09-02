@@ -1,16 +1,19 @@
 #!/home/sajadi/anaconda2/bin/python
 #/users/grad/sajadi/backup/anaconda2/bin/python
 
+import sys
 import cgi, os
 import cgitb; cgitb.enable()
 import tempfile
 import time
-import sys
-
-from calcsim import *
+import datetime
+from bs4 import BeautifulSoup as soup
 from shutil import copyfile
 import json
 
+
+sys.path.insert(0,'..')
+from wikisim.calcsim import *
 
 log('cgi-batchsim started');
 print "Content-type:application/json\r\n\r\n"
@@ -56,8 +59,6 @@ else:
 
 
 # Update result file
-import datetime
-from bs4 import BeautifulSoup as soup
 
 with open(resultfile,'r') as f:
     html=f.read()
@@ -122,7 +123,6 @@ resdiv.append(new_tag)
 with open(resultfile,'w') as f:
     f.write(sp.prettify())
 
-import json
 print json.dumps({"redirect":"out/results.html"})
 
 

@@ -49,6 +49,7 @@
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
                         <li><a href="#doc">Documentation</a></li>
+                        <li><a href="#download">Download</a></li>
                         <li><a href="#about">About</a></li>
                         <li><a href="#contact">Contact</a></li>
                         <li><a href="out/results.html">Results Page</a></li>
@@ -59,7 +60,7 @@
 
         <div class="container" id="bigdiv" disabled="true">
             <div class="container" id="topdiv">
-                <h2>WikiSim Project</h2>
+                <h1>WikiSim Project</h1>
                 <p><Strong><font size="4pt">Wikisim</font></Strong> provides a reliable open source "<em><strong>concept represenation</strong></em>" and <em><strong>Semantic Relatedness</strong></em> using <strong>Wikipedia</strong>. </p>
                 <p> The approach is based on Wikipedia "<strong>Graph Embedding</strong>". You can play with the demo, or directly request to the <a href="#doc">web service</a>. </p>
             </div>
@@ -183,11 +184,11 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <a name="doc"></a>
-                            <label> Documentation </label>
+                            <h1> Documentation </h1>
                             </div>
                             
                             <div class="panel-body">
-                            <p><strong> Single mode </Strong></p>
+                            <h2> Single mode </h2>
 
                             <p>The webservice provides two basic functions (or tasks): Embedding and Simiarity calculation. Both requests can be processed in single or batch mode.</p>
                             <ul>
@@ -196,7 +197,7 @@
                                     parameters: </br>
                                     <code>task</code>: should be 'emb' for this task </br>
                                     <code>direction</code>: 0 for using <em>incomming links</em>, 1 for <em>outgoing links</em> and 2 for <em>both</em>. We recommend using only outgoing links as it provides decent results and is significantly faster</br>
-                                    <code>cutoff</code>: The dimensionality of the embedding. This parameter is only used for returning the embeddings, the similarity calculation always uses all the dimensions. </br>
+                                    <code>cutoff</code>: the dimensionality of the embedding. This parameter is only used for returning the embeddings, the similarity calculation always uses all the dimensions. </br>
                                     <code>c1</code>: the concept to be processed </br>
                                     Example (using curl): </br>
                                     <code>curl --request POST 'http://ares.research.cs.dal.ca/~sajadi/wikisim/cgi-bin/cgi-pairsim.py' --data "task=emb" --data "dir=1" --data "cutoff=10" --data "c1=Sanandaj"</code>
@@ -211,17 +212,77 @@
                                     <code>curl --request POST 'http://ares.research.cs.dal.ca/~sajadi/wikisim/cgi-bin/cgi-pairsim.py' --data "task='sim'" --data "dir=1"  --data "c1=Tehran" --data "c2=Sanandaj"</code>
                                 </li>
                             </ul>
-                            <p><strong> Batch mode </Strong></p>
+                            <h2> Batch mode </h2>
                             <p>We strongly recommend using batch mode, either by post request and sending the file, or simply uploading the file in the batch mode input. For embeddings, each line of the file contains a single concept. For similarity calculation, file should be tab seperated, each line containing a pair of Wikipedia Concepts. </p>
 
                         </div>
                     </div>
                 </div>            
-                    <div class="panel-group">
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <a name="download"></a>
+                            <h1> Download </h1>
+
+                            <h2> Option 1. Download the Embeddings  </h2>
+                            <p> You can obviously download only the embeddings, for the following reasons we recommend to use the second option and use our small API:
+                             <ol>
+                                <li>
+                                    The embeddings are provided for wikipedia concepts page_ids and you need another table to find the concepts titles, moreover, redirect concepts are not included, so let's say you want to find the embeddings for "US", you have to follow the following steps:
+                                    <ol>
+                                        <li>
+                                            From the page table, find "US", and you see that its redirect field is 1, meaning that it's a redirect page; take its id, that is: 31643
+                                        </li>    
+                                        <li>
+                                            Go to redirect table and find out that it's redirected to 3434750 (the id for United_States)
+                                        </li>    
+                                        <li>
+                                            Go to embedding table and find the embedding for 3434750
+                                        </li>  
+                                    </ol>  
+                                </li>
+                                <li>
+                                    The nonzero dimentions are not included in the embedding, so there is a need for efficient alignment
+                                </li>   
+                            </ol>
+                            <p> But if you still want to use your own data-sturctures, download the following tables:</p>
+                            <ol>
+                                <li>
+                                    <a href= "http://cgm6.research.cs.dal.ca/~sajadi/downloads/wikisim/enwiki-20160305-page.main.tsv.gz">Page Table</a>
+                                    <p>Layout:</p>
+                                    <code>page_id , page_namespace (0:page,14: Category) , page_title , page_is_redirect </code>    
+                                </li>
+                                <li>
+                                    <a href= "http://cgm6.research.cs.dal.ca/~sajadi/downloads/wikisim/enwiki-20160305-redirect.main.tsv.gz"> Redirect Table</a>
+                                    <p>Layout:</p>
+                                    <code> rd_from , rd_to </code>    
+                                </li>
+                                <p>As stated in the paper, out-links are shorter and leads to faster process. If you want to get the full embedding for a word, find both its in-embedding and out-embedding and add them up</p>
+                                <li>
+                                    <a href = "http://cgm6.research.cs.dal.ca/~sajadi/downloads/wikisim/enwiki-20160305-pagelinksorderedin.main.tsv.gz">Embeddings (in-links)</a>
+                                    <p>Layout:</p>
+                                    <code> page_id , embedding in json format {id1:value1, ..., idn,valuen} </code>    
+                                </li>
+                                <li>
+                                    <a href = "http://cgm6.research.cs.dal.ca/~sajadi/downloads/wikisim/enwiki-20160305-pagelinksorderedout.main.tsv.gz">Embeddings (Out-Links) </a>
+                                    <p>Layout:</p>
+                                    <code> page_id , embedding in json format {id1:value1, ..., idn,valuen} </code>    
+                                </li>
+                            </ol>    
+                            <h2>Option 2. Pre-embedding + Small API (Recommended)</h2>
+                            <p>Follow the full instructions in the <a href="https://github.com/asajadi/wikisim/blob/master/api/api.ipynb">the jupyter notebook </a></p>
+                            <h2>Option 3. Building embeddings from the scratch</h2>
+                            <p>Follow the full instructions in <a href="https://github.com/asajadi/wikisim/blob/master/wikisim/wikisim.ipynb">the jupyter notebook </a></p>
+
+                        </div>            
+                    </div>
+                </div>    
+
+                <div class="panel-group">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <a name="about"></a>
-                            <label> About </label>
+                            <h1> About </h1>
                         </div>
                         
                         <div class="panel-body">

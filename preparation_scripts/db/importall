@@ -3,35 +3,48 @@
 echo "Imporintg Started..."
 date
 
-cat importpage.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
-echo "page done"
-
-cat importpagelinks.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
-echo "pageslinks done"
-
-cat importredirect.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
-echo "redirect done"
-
-if [ $2 -eq 20120403 ]
-then
-echo 'done'
-date
-exit 0
+if [ -f $1/enwiki-$2-page.main.tsv ]
+    then     
+        cat importpage.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
+        echo "page done"
 fi
 
-cat importcategory.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
-echo "category done"
+if [ -f $1/enwiki-$2-pagelinks.main.tsv ]
+    then     
+	cat importpagelinks.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
+	echo "pageslinks done"
+fi
 
-cat importcategorylinks.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
-echo "categorylinks done"
-
-cat createpagelinksorderedin.sql 										| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
-echo "createpagelinksorderedin done"
-
-cat createpagelinksorderedout.sql 										| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
-echo "createpagelinksorderedout done"
+if [ -f $1/enwiki-$2-redirect.main.tsv ]
+    then     
+	cat importredirect.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
+	echo "redirect done"
+fi
 
 
+if [ -f $1/enwiki-$2-category.main.tsv ]
+    then     
+	cat importcategory.sql 		| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
+	echo "category done"
+fi
+
+if [ -f $1/enwiki-$2-categorylinks.main.tsv ]
+    then     
+	cat importcategorylinks.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
+	echo "categorylinks done"
+fi
+
+if [ -f $1/enwiki-$2-pagelinksorderedin.main.tsv ]
+    then     
+	cat importpagelinksorderedin.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
+	echo "importpagelinksorderedin done"
+fi
+
+if [ -f $1/enwiki-$2-pagelinksorderedout.main.tsv ]
+    then     
+	cat importpagelinksorderedout.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
+	echo "importpagelinksorderedin done"
+fi
 
 #cat importexternallinks.sql 	| perl -s -p -e 's/\$1/$home/g;s/\$2/$ver/g;' -- -home=$1 -ver=$2 	| mysql -u $3 --password=$4 --local-infile=1 enwiki$2  
 #echo "externallinks done"
