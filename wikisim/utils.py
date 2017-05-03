@@ -21,7 +21,7 @@ def readds(url, usecols=None):
     data = pd.read_table(url, header=None, usecols=usecols)
     return data
 
-DISABLE_LOG=False;
+DISABLE_LOG=True;
 
 def clearlog(logfile):
     with open(logfile, 'w'):
@@ -36,14 +36,15 @@ def log(instr, *params):
     if DISABLE_LOG:
         return
     logres(logfile, instr, *params)
-
-outdir = '../out'    
-logfile=os.path.join(outdir, 'log.txt');
-if not os.path.exists(logfile):
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-    log('log created') 
-    os.chmod(logfile, 0777)    
+    
+if not DISABLE_LOG:    
+    outdir = '../out'    
+    logfile=os.path.join(outdir, 'log.txt');
+    if not os.path.exists(logfile):
+        if not os.path.exists(outdir):
+            os.makedirs(outdir)
+        log('log created') 
+        os.chmod(logfile, 0777)    
     
     
 def timeformat(sec):

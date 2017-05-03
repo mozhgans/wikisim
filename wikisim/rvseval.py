@@ -12,19 +12,22 @@ import pandas as pd
 #%aimport calcsim
 from config import *
 from calcsim import *
+import gensim
 
+import functools
 
-print DISABLE_CACHE
+#print DISABLE_CACHE
 #clearcache()
-direction=DIR_OUT
-method = 'rvspagerank'
-initdirs(direction, 'rvspagerank')
+direction=None;
+method = 'word2vec'
+    
+    
+initdirs(direction, 'word2vec')
 resfilename =  os.path.join(baseresdir, 'reslog.txt')
 
-#dsfiles=('MiniMayoSRS-edited.csv', 'MayoSRS-edited.csv')
+dsfiles=('MiniMayoSRS-edited.csv', 'MayoSRS-edited.csv')
 dsfiles=('MC_28-edited.csv', 'RG-edited.csv', 'wsim353-edited.csv', 'Kore-edited.csv', 'MiniMayoSRS-edited.csv', 
          'MayoSRS-edited.csv', 'UMNSRS_relatedness-edited.csv', 'UMNSRS_similarity-edited.csv')
-
 for dsname in dsfiles:
     start = time.time()
     

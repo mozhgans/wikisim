@@ -12,6 +12,7 @@ from wikipedia import *
 
 home = os.path.expanduser("~");
 dsdir = os.path.join(home ,"backup/projects/wikisim/datasets/similarity");
+#dsdir = os.path.join(home ,"backup/projects/wikisim/datasets/similarity.orig");
 workingdir = os.path.join(home , 'backup/tmp/');
 baseresdir = path = os.path.join(workingdir, 'results')
 
@@ -45,7 +46,7 @@ def printflush(*str):
     
     
 def graphtype(direction):
-    if direction == None:
+    if direction is None:
         return ''
     if direction == DIR_IN:
         return 'in'

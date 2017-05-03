@@ -38,7 +38,7 @@ if task == 'emb':
 	if id1 is None:
 		print json.dumps({"err": '%s not found in wikipedia, check if this url exist: "en.wikipedia.org/wiki/%s"' % (c1,c1)});
 		exit();	
-	em = conceptrep(id1, direction, get_titles=(viz=='true'),cutoff=cutoff)
+	em = conceptrep(id1, method='rvspagerank', direction=direction, get_titles=(viz=='true'), cutoff=cutoff)
 	print json.dumps({"em": em.to_dict()});
 	exit();
 
@@ -59,8 +59,8 @@ if viz is None or viz=='false':
 	print json.dumps({"rel":sim})
  	exit()
 
-cre1 = conceptrep(title2id(c1), direction, get_titles=True, cutoff=cutoff)
-cre2 = conceptrep(title2id(c2), direction, get_titles=True, cutoff=cutoff)
+cre1 = conceptrep(title2id(c1), method='rvspagerank', direction=direction, get_titles=True, cutoff=cutoff)
+cre2 = conceptrep(title2id(c2), method='rvspagerank', direction=direction, get_titles=True, cutoff=cutoff)
 
 print json.dumps({"rel":sim, "em1": cre1.to_dict(), "em2": cre2.to_dict()})
 

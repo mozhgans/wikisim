@@ -4,8 +4,8 @@ import sys
 import urllib
 import sys
 from HTMLParser import HTMLParser
-sys.path.append('../../cgi-bin/')
-from wikipedia import *
+sys.path.insert(0,'..')
+from wikisim.wikipedia import *
 
 fileinput = sys.stdin
 
@@ -40,6 +40,7 @@ def replacelinks(text):
         x = url.find("#")
         if x!=-1:
             url=url[:x]
+        #BUG: so what if x==0?  maybe the current approach, empty "dest" is not bad
         antext = m.group(2)
         if '//' not in url:
             annotations.append({

@@ -26,7 +26,7 @@ MAX_GRAPH_SIZE=1000000
 DIR_IN=0;
 DIR_OUT=1;
 DIR_BOTH=2;
-_db = MySQLdb.connect(host="127.0.0.1",port=3307,user='root',passwd="emilios",db="enwiki20160305")
+_db = MySQLdb.connect(host="127.0.0.1",port=3307,user='amaral',passwd="123456",db="enwiki20160305")
 _cursor = _db.cursor()
 #WIKI_SIZE = 10216236;
 #WIKI_SIZE = 13670498; #2016
@@ -40,10 +40,27 @@ def close():
 def reopen():
     global _db, _cursor;
     if _db is None:
-        _db = MySQLdb.connect(host="127.0.0.1",port=3307,user='root',passwd="emilios",db="enwiki20160305")
+        _db = MySQLdb.connect(host="127.0.0.1",port=3307,user='amaral',passwd="123456",db="enwiki20160305")
         _cursor = _db.cursor()
         
-
+def load_table(tbname, limit=-1):
+    """ Returns a list, containing a whole table     
+    
+    Args: 
+        tbname: Table Name
+    Returns: 
+        The list of rows
+    """
+    if limit!=-1:
+        q = """SELECT * FROM `%s` limit %s""" % (tbname, limit)
+    else:
+        q = """SELECT * FROM `%s`""" % (tbname,)
+        
+    _cursor.execute(q)
+    rows = _cursor.fetchall();
+    return rows
+    
+    
 def id2title(wid):
     """ Returns the title for a given id
 

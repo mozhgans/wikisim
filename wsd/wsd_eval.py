@@ -3,6 +3,8 @@ from optparse import OptionParser
 
 from wsd import *
 
+np.seterr(all='raise')
+
 parser = OptionParser()
 parser.add_option("-t", "--max_t", action="store", type="int", dest="max_t", default=5)
 parser.add_option("-c", "--max_count", action="store", type="int", dest="max_count", default=-1)
@@ -11,17 +13,24 @@ parser.add_option("-v", action="store_true", dest="verbose", default=False)
 
 (options, args) = parser.parse_args()
 
+#word2vec_path = os.path.join(home, 'backup/wikipedia/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
+word2vec_path = os.path.join(home, '/users/grad/sajadi/backup/wikipedia/20160305/embed/word2vec.enwiki-20160305-replace_surface.1.0.500.10.5.28.5.5/word2vec.enwiki-20160305-replace_surface.1.0.500.10.5.28.5.5')
+
 
 dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
           os.path.join(home,'backup/datasets/ner/wiki-mentions.5000.json'),
           os.path.join(home,'backup/datasets/ner/aida.json'), 
+          os.path.join(home,'backup/datasets/ner/msnbc.json'),
+          os.path.join(home,'backup/datasets/ner/aquaint.json') 
           ]
 
+methods = (('ams', DIR_BOTH,'ilp'), ('wlm', DIR_IN,'ilp'),('rvspagerank', DIR_BOTH, 'ilp'),
+           ('wlm', DIR_IN, 'tagme'), ('rvspagerank', DIR_BOTH, 'tagme'),
+           ('rvspagerank', DIR_BOTH, 'context4_4'), 
+          )
 
-methods = (('cocit', DIR_IN,'ilp'), ('coup', DIR_OUT, 'ilp'), ('ams', DIR_BOTH,'ilp'), ('wlm', DIR_IN,'ilp'),
-           ('rvspagerank', DIR_IN, 'ilp'), ('rvspagerank', DIR_OUT, 'ilp'), ('rvspagerank', DIR_BOTH, 'ilp'),
-           ('wlm', DIR_IN,'ilp2'),
-           ('rvspagerank', DIR_IN, 'ilp2'), ('rvspagerank', DIR_OUT, 'ilp2'), ('rvspagerank', DIR_BOTH, 'ilp2'))
+methods = (('word2vec.500', None,'context4_4'),)
+#methods = (('rvspagerank', DIR_BOTH,'context4_4'),)
 
 max_t = options.max_t
 max_count = options.max_count
@@ -45,6 +54,10 @@ detailedresname=  os.path.join(outdir, 'detailedreslog.txt')
 
 
 for method, direction, op_method in methods:
+    if 'word2vec' in method:
+        gensim_loadmodel(word2vec_path)
+        print "loaded"
+        sys.stdout.flush()
     for dsname in dsnames:
         start = time.time()
         
@@ -82,13 +95,14 @@ for method, direction, op_method in methods:
                     
                 C = generate_candidates(S, M, max_t=max_t, enforce=True)
                 
-                #try:
-                ids, titles = disambiguate_driver(C, ws, method, direction, op_method)
-                tp = get_tp(M, ids) 
-                #except:
-                    #tp = (None, None)
-                    #print "[Error]:\t",sys.exc_info()[0]
-                    #continue
+                try:
+                    ids, titles = disambiguate_driver(C, ws, method, direction, op_method)
+                    tp = get_tp(M, ids) 
+                except Exception as ex:
+                    tp = (None, None)
+                    print "[Error]:\t", type(ex), ex
+                    #raise
+                    continue
                 
                 overall.append(tp)
                 tmpf.write(json.dumps({"no":count, "tp":tp})+"\n")

@@ -3,15 +3,13 @@
 
 from __future__ import division
 
-
+from embedding import *
 #from collections import defaultdict
 import json
 import math
 from scipy import stats
-
-from wikipedia import * # uncomment
-from pagerank import * # uncomment
-from utils import * # uncomment
+from config import *
+#from utils import * # uncomment
 
 __author__ = "Armin Sajadi"
 __copyright__ = "Copyright 215, The Wikisim Project"
@@ -21,6 +19,9 @@ __version__ = "1.0.1"
 __maintainer__ = "Armin Sajadi"
 __email__ = "sajadi@cs.dal.ca"
 __status__ = "Development"
+
+#constants
+
 
 def _unify_ids_scores(*id_sc_tuple):
     uids, id2in = e2i(*(ids for ids, _ in id_sc_tuple));
@@ -32,49 +33,27 @@ def _unify_ids_scores(*id_sc_tuple):
         uscs += (scs_u,)                
     return uids, uscs       
 
-
-def concept_embedding(wid, direction):
-    """ Calculates concept embedding to be used in relatedness
     
-    Args:
-        wid: wikipedia id
-        direction: 0 for in, 1 for out, 2 for all
-        
+def getsim_word2vec(id1, id2):
+    """ Calculates wor2vec similarity between two concepts 
+    Arg:
+        id1, id2: the two concepts 
     Returns:
-        The neighbor ids, their scores and the whole neighorhood graph (for visualization purposes)
-        
+        The similarity score        
     """
-    log('[concept_embedding started]\twid = %s, direction = %s', wid, direction)
+    model  = getword2vec_model()
+    if model is None:
+        log('[getsim_word2vec]\tmodel not loaded')
+        raise Exception('model not loaded, try gensim_loadmodel()')
+        
+    if id1 not in model.vocab:
+        #print '%s,%s skipped, %s not in vocab ' % (id1, id2, id1)
+        return 0
+    if id2 not in model.vocab:
+        #print '%s,%s skipped, %s not in vocab ' % (id1, id2, id2)
+        return 0
+    return model.similarity(id1, id2)
 
-    if direction == DIR_IN or direction==DIR_OUT:
-        em = _concept_embedding_io(wid, direction)
-    if direction == DIR_BOTH:
-        em = _concept_embedding_both(wid, direction)
-    log('[concept_embedding]\tfinished')
-    return em
-    
-def _concept_embedding_io(wid, direction):
-    wid = resolveredir(wid)
-    cached_em = checkcache(wid, direction);
-    if cached_em is not None:
-        return cached_em;
-
-    (ids, links) = getneighbors(wid, direction);
-    if ids:
-        scores = pagerank_sparse_power(create_csr(links), reverse=True)
-        em = pd.Series(scores, index=ids) 
-    else:
-        em = pd.Series([], index=[])  
-    cachescores(wid, em, direction);
-    return em
-            
-
-def _concept_embedding_both(wid, direction):            
-        in_em = _concept_embedding_io(wid, DIR_IN);
-        out_em = _concept_embedding_io(wid, DIR_OUT )
-        if (in_em is None) or (out_em is None):
-            return None;
-        return in_em.add(out_em, fill_value=0)/2
 
 def getsim_wlm(id1, id2):
     """ Calculates wlm (ngd) similarity between two concepts 
@@ -175,7 +154,7 @@ def getsim_emb(id1,id2, direction):
 #     print em2
     return 1-sp.spatial.distance.cosine(em1.values,em2.values);
 
-def getsim(id1,id2, method, direction=None):
+def getsim(id1,id2, method='rvspagerank', direction=DIR_BOTH, sim_method=None):
     """ Calculates well-known similarity metrics between two concepts 
     Arg:
         id1, id2: the two concepts 
@@ -201,19 +180,48 @@ def getsim(id1,id2, method, direction=None):
         sim = getsim_coup(id1,id2)
     elif method=='ams':
         sim = getsim_ams(id1,id2)
+    elif 'word2vec' in  method:
+        sim = getsim_word2vec(id1, id2)
+    elif sim_method is not None:    
+        sim = sim_method(id1,id2)
     else:
         sim=None
     log('[getsim]\tfinished')
     return sim
 
+ENTITY_TITLE = 0
+ENTITY_ID = 1
+ENTITY_ID_STR = 2
+ENTITY_ID_ID_STR = 3
     
-def getsim_file(infilename, outfilename, method='rvspagerank', direction=None):
+def encode_entity(term1, term2, entity_encoding):
+    if entity_encoding==ENTITY_TITLE:
+        return term1, term2
+    
+    term1 = title2id(term1)
+    term2 = title2id(term2)
+    if entity_encoding==ENTITY_ID_STR:
+        term1 = str(term1)
+        term2 = str(term2)
+        
+    if entity_encoding==ENTITY_ID_ID_STR:
+        term1 = 'id_'+term1
+        term2 = 'id_'+term2
+    return term1, term2
+    
+def getsim_file(infilename, outfilename, method='rvspagerank', direction=DIR_BOTH, sim_method=None, entity_encoding=ENTITY_ID):
     """ Batched (file) similarity.
     
     Args: 
         infilename: tsv file in the format of pair1    pair2   [goldstandard]
         outfilename: tsv file in the format of pair1    pair2   similarity
         direction: 0 for in, 1 for out, 2 for all
+        entity_encoding: how the entity is represented in the dataset
+                        ENTITY_TITLE = simple entity
+                        ENTITY_ID = integer id
+                        ENTITY_ID_STR = str id
+                        ENTITY_ID_ID_STR = id_entityid
+                        
     Returns:
         vector of scores, and Spearmans's correlation if goldstandard is given
     """
@@ -230,12 +238,12 @@ def getsim_file(infilename, outfilename, method='rvspagerank', direction=None):
         if len(row)>3: 
             gs.append(row[3]);
             
-        wid1 = title2id(row[1])
-        wid2 = title2id(row[2])
-        if (wid1 is None) or (wid2 is None):
+        term1, term2 = encode_entity(row[1], row[2], entity_encoding)
+            
+        if (term1 is None) or (term2 is None):
             sim=0;
         else:
-            sim=getsim(wid1, wid2, method, direction);
+            sim=getsim(term1, term2, method, direction, sim_method);
         outfile.write("\t".join([str(row[1]), str(row[2]), str(sim)])+'\n')
         scores.append(sim)
     outfile.close();
@@ -244,37 +252,6 @@ def getsim_file(infilename, outfilename, method='rvspagerank', direction=None):
     log('[getsim_file]\tfinished')
     return scores, spcorr
 
-def conceptrep(wid, direction, get_titles=True, cutoff=None):
-    """ Finds a representation for a concept
-    
-        Concept Representation is a vector of concepts with their score
-    Arg:
-        wid: Wikipedia id
-        direction: 0 for in, 1 for out, 2 for all
-        titles: include titles in the embedding (not needed for mere calculations)
-        cutoff: the first top cutoff dimensions (None for all)
-        
-    Returns:
-        the vecotr of ids, their titles and theirs scores. It also returns the
-        graph for visualization purposes. 
-    """
-    
-    log('[conceptrep started]\twid = %s, direction = %s', wid, direction)
-    
-    em=concept_embedding(wid, direction);    
-    if em.empty:
-        return em;
-    
-    
-    #ids = em.keys();
-    
-    if cutoff is not None:
-        em = em.sort_values(ascending=False)
-        em = em[:cutoff]
-    if get_titles:
-        em = pd.Series(zip(ids2title(em.index), em.values.tolist()), index=em.index)
-    log ('[conceptrep]\tfinished')
-    return em
     
 
 def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=None):
@@ -298,7 +275,8 @@ def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=N
         if wid is None:
             em=pd.Series();
         else:
-            em=conceptrep(wid, direction, get_titles, cutoff)
+            em=conceptrep(wid, method='rvspagerank', direction = direction, 
+                          get_titles = get_titles, cutoff=cutoff)
         outfile.write(row[1]+"\t"+em.to_json()+"\n")
     outfile.close();
     log('[getembed_file]\tfinished')

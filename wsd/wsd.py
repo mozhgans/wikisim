@@ -49,11 +49,14 @@ def generate_candidates(S, M, max_t=10, enforce=True):
         candslist.append(clist)
     return  candslist 
 def disambiguate(C, method, direction, op_method):
-        
     if op_method == 'ilp':
         return disambiguate_ilp(C, method, direction)
     if op_method == 'ilp2':
         return disambiguate_ilp_2(C, method, direction)
+    if op_method == 'keyq':
+        return key_quad(C, method, direction)
+    if op_method == 'pkeyq':
+        return Pkey_quad(C, method, direction)
     if  op_method == 'context1'  :
         return contextdisamb_1(C, direction)
     if  op_method == 'context2'  :
@@ -62,14 +65,13 @@ def disambiguate(C, method, direction, op_method):
         return contextdisamb_3(C, direction)
     
     if  op_method == 'context4_1'  :
-        return contextdisamb_4(C, direction, 1)
+        return contextdisamb_4(C, direction, method, 1)
     if  op_method == 'context4_2'  :
-        return contextdisamb_4(C, direction, 2)
+        return contextdisamb_4(C, direction, method, 2)
     if  op_method == 'context4_3'  :
-        return contextdisamb_4(C, direction, 3)
-    
+        return contextdisamb_4(C, direction, method, 3)    
     if  op_method == 'context4_4'  :
-        return contextdisamb_4(C, direction, 4)
+        return contextdisamb_4(C, direction, method, 4)
     
     if  op_method == 'tagme'  :
         return tagme(C, method, direction)
@@ -251,13 +253,76 @@ def disambiguate_ilp_2(C, method, direction):
     titles = ids2title(ids)
     return ids, titles
 
+# key
+def evalkey(c, a, candslist, simmatrix):
+    resolved=[]
+    score=0;
+    for i in  range(len(candslist)):
+        if a==i:
+            resolved.append(c[0])
+            continue
+        cands = candslist[i]
+        vb = [(cj[0], simmatrix[c[0]][cj[0]])  for cj in cands]
+        max_concept, max_sc = max(vb, key=lambda x: x[1])
+        score += max_sc
+        resolved.append(max_concept)
+    return resolved,score
+
+def key_quad(candslist, method, direction):
+    res_all=[]
+    simmatrix = get_sim_matrix(candslist, method, direction)
+
+    for i in range(len(candslist)):
+        for j in range(len(candslist[i])):
+            res_ij =  evalkey(candslist[i][j], i, candslist, simmatrix)
+            res_all.append(res_ij)
+    res, score = max(res_all, key=lambda x: x[1])
+    #print("Score:", score)
+    titles = ids2title(res)
+    return res, titles
+
+# Parallel Keyquad
+from functools import partial
+from multiprocessing import Pool as ThreadPool 
+def Pevalkey((c, a), candslist, simmatrix):
+    resolved=[]
+    score=0;
+    for i in  range(len(candslist)):
+        if a==i:
+            resolved.append(c[0])
+            continue
+        cands = candslist[i]
+        vb = [(cj[0], simmatrix[c[0]][cj[0]])  for cj in cands]
+        max_concept, max_sc = max(vb, key=lambda x: x[1])
+        score += max_sc
+        resolved.append(max_concept)
+    return resolved,score
+def Pkey_quad(candslist, method, direction):
+    res_all=[]
+    simmatrix = get_sim_matrix(candslist, method, direction)
+    pool = ThreadPool(25) 
+    
+    partial_evalkey = partial(Pevalkey, candslist=candslist, simmatrix=simmatrix)
+    I=[[j]*len(candslist[j]) for j in range(len(candslist))]
+    
+    res_all= pool.map(partial_evalkey, zip(itertools.chain(*candslist), itertools.chain(*I)))
+    pool.close() 
+    pool.join() 
+    
+    res, score = max(res_all, key=lambda x: x[1])
+    titles = ids2title(res)
+    return res, titles
+
+
 # Context Vector
+
+        
 
 def contextdisamb_1(candslist, direction=DIR_OUT):
     cframelist=[]
     cveclist_bdrs = []
     for cands in candslist:
-        cands_rep = [conceptrep(c[0], direction, get_titles=False) for c in cands]
+        cands_rep = [conceptrep(c[0], direction=direction, get_titles=False) for c in cands]
         cveclist_bdrs += [(len(cframelist), len(cframelist)+len(cands_rep))]
         cframelist += cands_rep
 
@@ -300,7 +365,7 @@ def contextdisamb_2(candslist, direction=DIR_OUT):
     cframelist=[]
     cveclist_bdrs = []
     for cands in candslist:
-        cands_rep = [conceptrep(c[0], direction, get_titles=False) for c in cands]
+        cands_rep = [conceptrep(c[0], direction=direction, get_titles=False) for c in cands]
         cveclist_bdrs += [(len(cframelist), len(cframelist)+len(cands_rep))]
         cframelist += cands_rep
 
@@ -359,7 +424,7 @@ def contextdisamb_3(candslist, direction=DIR_OUT):
     for cands in candslist:
         if len(candslist)>1:
             ambig_count += 1
-        cands_rep = [conceptrep(c[0], direction, get_titles=False) for c in cands]
+        cands_rep = [conceptrep(c[0], direction=direction, get_titles=False) for c in cands]
         cveclist_bdrs += [(len(cframelist), len(cframelist)+len(cands_rep))]
         cframelist += cands_rep
 
@@ -438,7 +503,10 @@ def find_key_concept(candslist, cveclist_bdrs, cvec_arr, ver):
         convec=aggr_cveclist[:i].sum(axis=0) + aggr_cveclist[i+1:].sum(axis=0)
         D=[]    
         for v in cvec:
-            d = 1-sp.spatial.distance.cosine(convec, v);
+            try:
+                d = 1-sp.spatial.distance.cosine(convec, v);
+            except:
+                d=0                
             if np.isnan(d):
                 d=0
             D.append(d)
@@ -457,14 +525,14 @@ def find_key_concept(candslist, cveclist_bdrs, cvec_arr, ver):
     return max_concept, max_candidate
 
 
-def contextdisamb_4(candslist, direction=DIR_OUT, ver=1):
+def contextdisamb_4(candslist, direction=DIR_OUT, method='rvspagerank', ver=1):
     cframelist=[]
     cveclist_bdrs = []
     ambig_count=0
     for cands in candslist:
         if len(candslist)>1:
             ambig_count += 1
-        cands_rep = [conceptrep(c[0], direction, get_titles=False) for c in cands]
+        cands_rep = [conceptrep(c[0], method=method, direction=direction, get_titles=False) for c in cands]
         cveclist_bdrs += [(len(cframelist), len(cframelist)+len(cands_rep))]
         cframelist += cands_rep
 
@@ -501,7 +569,14 @@ def contextdisamb_4(candslist, direction=DIR_OUT, ver=1):
         mi=0
 
         for v in cvec:
-            d = 1-sp.spatial.distance.cosine(convec, v);
+
+            try:
+                d = 1-sp.spatial.distance.cosine(convec, v);
+            except:
+                d=0                
+            if np.isnan(d):
+                d=0
+            
             if d>maxd:
                 maxd=d
                 index=mi
