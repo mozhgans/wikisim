@@ -24,13 +24,18 @@ dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
           os.path.join(home,'backup/datasets/ner/aquaint.json') 
           ]
 
+dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
+          os.path.join(home,'backup/datasets/ner/msnbc.json'),
+          os.path.join(home,'backup/datasets/ner/aquaint.json') 
+          ]
+
 methods = (('ams', DIR_BOTH,'ilp'), ('wlm', DIR_IN,'ilp'),('rvspagerank', DIR_BOTH, 'ilp'),
            ('wlm', DIR_IN, 'tagme'), ('rvspagerank', DIR_BOTH, 'tagme'),
-           ('rvspagerank', DIR_BOTH, 'context4_4'), 
+           ('rvspagerank', DIR_BOTH, 'keydisamb'), 
           )
 
-methods = (('word2vec.500', None,'context4_4'),)
-#methods = (('rvspagerank', DIR_BOTH,'context4_4'),)
+#methods = (('word2vec.500', None,'context4_4'),)
+methods = (('rvspagerank', DIR_BOTH,'keydisamb'),)
 
 max_t = options.max_t
 max_count = options.max_count
