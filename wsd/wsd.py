@@ -71,7 +71,8 @@ def disambiguate(C, method, direction, op_method):
                                              key: Key Entity based method
         
     """
-    
+    if op_method == 'popularity':
+        return disambiguate_popular(C)
     if op_method == 'ilp':
         return disambiguate_ilp(C, method, direction)
     if op_method == 'ilp2':
@@ -105,7 +106,7 @@ def disambiguate(C, method, direction, op_method):
 
 
 
-def disambiguate_driver(C, ws, method, direction, op_method):
+def disambiguate_driver(C, ws, method='rvspagerank', direction=DIR_BOTH, op_method="keydisamb"):
     """ Initiate the disambiguation by chunking the sentence 
         Disambiguate C list using a disambiguation method 
         Inputs:
@@ -159,7 +160,10 @@ def get_prec(tp_list):
     
     return micro_prec, macro_prec
 
-
+def disambiguate_popular(C):
+    ids = [c[0][0] for c in C ]
+    titles= ids2title(ids)
+    return ids, titles
 # Integer Programming
 
 from itertools import izip
