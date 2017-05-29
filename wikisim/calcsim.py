@@ -8,7 +8,9 @@ from embedding import *
 import json
 import math
 from scipy import stats
+import requests
 from config import *
+
 #from utils import * # uncomment
 
 __author__ = "Armin Sajadi"
@@ -33,7 +35,40 @@ def _unify_ids_scores(*id_sc_tuple):
         uscs += (scs_u,)                
     return uids, uscs       
 
+def get_solr_count(s):
+    """ Gets the number of documents the string occurs 
+        NOTE: Multi words should be quoted
+    Arg:
+        s: the string (can contain AND, OR, ..)
+    Returns:
+        The number of documents
+    """
+    q='+text:(%s)'%(s,)
+    qstr = 'http://localhost:8983/solr/enwiki20160305/select'
+    params={'indent':'on', 'wt':'json', 'q':q, 'rows':0}
+    r = requests.get(qstr, params=params)
+    D = r.json()['response']
+    return D['numFound']
+
+def getsim_ngd(term1,term2):
+    """ Calculates Normalized Google Distance (ngd) similarity between two concepts 
+    Arg:
+        id1, id2: the two concepts 
+    Returns:
+        The similarity score        
+    """
     
+    f1=get_solr_count('"%s"'%(term1,))
+    
+    f2=get_solr_count('"%s"'%(term2,))
+    f12=get_solr_count('"%s" AND "%s"'%(term1, term2))
+    
+    if (f1==0) or (f2==0) or (f12==0):
+        return 0;
+    dist = (sp.log(max(f1,f2))-sp.log(f12))/(sp.log(WIKI_SIZE)-sp.log(min(f1,f2)));
+    sim = 1-dist if dist <=1 else 0
+    return sim
+        
 def getsim_word2vec(id1, id2):
     """ Calculates wor2vec similarity between two concepts 
     Arg:
@@ -67,9 +102,9 @@ def getsim_wlm(id1, id2):
     f1 = len(in1)
     f2 = len(in2)
     f12=len(in1.intersection(in2))
-    dist = (sp.log(max(f1,f2))-sp.log(f12))/(sp.log(WIKI_SIZE)-sp.log(min(f1,f2)));
     if (f1==0) or (f2==0) or (f12==0):
         return 0;
+    dist = (sp.log(max(f1,f2))-sp.log(f12))/(sp.log(WIKI_SIZE)-sp.log(min(f1,f2)));
     sim = 1-dist if dist <=1 else 0
     return sim
 
@@ -154,6 +189,7 @@ def getsim_emb(id1,id2, direction):
 #     print em2
     return 1-sp.spatial.distance.cosine(em1.values,em2.values);
 
+# TODO(asajadi): What the hell is sim_method?
 def getsim(id1,id2, method='rvspagerank', direction=DIR_BOTH, sim_method=None):
     """ Calculates well-known similarity metrics between two concepts 
     Arg:
@@ -182,6 +218,8 @@ def getsim(id1,id2, method='rvspagerank', direction=DIR_BOTH, sim_method=None):
         sim = getsim_ams(id1,id2)
     elif 'word2vec' in  method:
         sim = getsim_word2vec(id1, id2)
+    elif 'ngd' in  method:
+        sim = getsim_ngd(id1, id2)
     elif sim_method is not None:    
         sim = sim_method(id1,id2)
     else:
