@@ -35,7 +35,7 @@ def conceptrep(wid, method ='rvspagerank', direction=DIR_BOTH, get_titles=True, 
     if method =='rvspagerank':
         return conceptrep_rvs(wid, direction, get_titles, cutoff)
     if 'word2vec' in method:
-        return getword2vector(wid)
+        return getentity2vector(wid)
 
 
 def concept_embedding(wid, direction):
@@ -125,11 +125,9 @@ def gensim_loadmodel(model_path):
     return _word2vec_model
     
 def getentity2vector(wid):
-    wid_s=str(wid)
-    wid_s = 'id_'+ wid_s
-    if wid_s not in _word2vec_model.vocab:
+    if (wid is None) or (wid not in _word2vec_model.vocab):
         return  pd.Series(sp.zeros(_word2vec_model.vector_size))
-    return pd.Series(_word2vec_model[wid_s])
+    return pd.Series(_word2vec_model[wid])
 
 def getword2vector(word):
     if word not in _word2vec_model.vocab:

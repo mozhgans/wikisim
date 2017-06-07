@@ -12,9 +12,10 @@ parser.add_option("-w", "--win_size", action="store", type="int", dest="win_size
 parser.add_option("-v", action="store_true", dest="verbose", default=False)
 
 (options, args) = parser.parse_args()
+fresh_restart=True
 
 word2vec_path = os.path.join(home, 'backup/wikipedia/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
-#word2vec_path = os.path.join(home, '/users/grad/sajadi/backup/wikipedia/20160305/embed/word2vec.enwiki-20160305-replace_surface.1.0.500.10.5.28.5.5/word2vec.enwiki-20160305-replace_surface.1.0.500.10.5.28.5.5')
+#word2vec_path = os.path.join(home, '/users/grad/sajadi/backup/wikipedia/20160305/embed/word2vec.enwiki-20160305-replace_surface.1.0.500.10.5.15.5.5/word2vec.enwiki-20160305-replace_surface.1.0.500.10.5.15.5.5')
 
 
 dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
@@ -24,10 +25,19 @@ dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
           os.path.join(home,'backup/datasets/ner/aquaint.json') 
           ]
 
-dsnames = [os.path.join(home,'backup/datasets/ner/wiki-mentions.5000.json')]
+dsnames = [os.path.join(home,'backup/datasets/ner/wiki-mentions.5000.json'),
+          ]
+dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
+          os.path.join(home,'backup/datasets/ner/msnbc.json'),
+          os.path.join(home,'backup/datasets/ner/aquaint.json') 
+          ]
 
 methods = (('ams', DIR_BOTH,'ilp'), ('wlm', DIR_IN,'ilp'),('rvspagerank', DIR_BOTH, 'ilp'))
 methods = (('word2vec.ehsan', DIR_BOTH,'ilp') ,('rvspagerank', DIR_BOTH, 'keyq'),('rvspagerank', DIR_BOTH, 'keydisamb'))
+methods = (('word2vec.ehsan', DIR_BOTH, 'keydisamb'), ('word2vec.ehsan', DIR_BOTH,'entitycontext') ,('rvspagerank', DIR_BOTH, 'entitycontext'))
+#methods = (('rvspagerank', DIR_BOTH, 'ilp'),('word2vec.ehsan', DIR_BOTH, 'ilp'),)
+methods = (('word2vec.ehsan', DIR_BOTH,'ilp') ,)
+methods = (('word2vec.ehsan', DIR_BOTH,'word2vec_word_context') ,)
 
 #methods = (('word2vec.500', None,'context4_4'),)
 #methods = (('rvspagerank', DIR_BOTH,'keydisamb'),)
@@ -69,7 +79,7 @@ for method, direction, op_method in methods:
                                    '-'.join([method, str(direction), op_method, str(max_t), str(ws), os.path.basename(dsname)]))
         overall=[]
         start_count=-1
-        if os.path.isfile(tmpfilename):
+        if os.path.isfile(tmpfilename) and not fresh_restart:
             with open(tmpfilename,'r') as tmpf:
                 for line in tmpf:
                     js = json.loads(line.strip())
@@ -93,10 +103,10 @@ for method, direction, op_method in methods:
                     print "%s:\tS=%s\n\tM=%s" % (count, json.dumps(S, ensure_ascii=False).encode('utf-8'),json.dumps(M, ensure_ascii=False).encode('utf-8'))
                     sys.stdout.flush()
                     
-                C = generate_candidates(S, M, max_t=max_t, enforce=True)
+                C = generate_candidates(S, M, max_t=max_t, enforce=False)
                 
                 try:
-                    ids, titles = disambiguate_driver(C, ws, method, direction, op_method)
+                    ids, titles = disambiguate_driver(S,M, C, ws=0, method=method, direction=direction, op_method=op_method)
                     tp = get_tp(M, ids) 
                 except Exception as ex:
                     tp = (None, None)

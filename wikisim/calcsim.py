@@ -189,7 +189,24 @@ def getsim_emb(id1,id2, direction):
 #     print em2
     return 1-sp.spatial.distance.cosine(em1.values,em2.values);
 
-# TODO(asajadi): What the hell is sim_method?
+def encode_entity(term, method,get_id=True):    
+    if method in {'ngd'}:
+        return term
+    if get_id:
+        term = title2id(term)
+    if term is None:
+        return None
+    if method in {'rvspagerank','wlm','cocit','coup','ams'} :
+        return term
+    if 'word2vec_id' in method:
+        term = 'id_' + str(term)
+        return term
+    if 'word2vec':
+        term = str(term)
+        return term
+    
+    return term
+
 def getsim(id1,id2, method='rvspagerank', direction=DIR_BOTH, sim_method=None):
     """ Calculates well-known similarity metrics between two concepts 
     Arg:
@@ -227,38 +244,14 @@ def getsim(id1,id2, method='rvspagerank', direction=DIR_BOTH, sim_method=None):
     log('[getsim]\tfinished')
     return sim
 
-ENTITY_TITLE = 0
-ENTITY_ID = 1
-ENTITY_ID_STR = 2
-ENTITY_ID_ID_STR = 3
     
-def encode_entity(term1, term2, entity_encoding):
-    if entity_encoding==ENTITY_TITLE:
-        return term1, term2
-    
-    term1 = title2id(term1)
-    term2 = title2id(term2)
-    if entity_encoding==ENTITY_ID_STR:
-        term1 = str(term1)
-        term2 = str(term2)
-        
-    if entity_encoding==ENTITY_ID_ID_STR:
-        term1 = 'id_'+term1
-        term2 = 'id_'+term2
-    return term1, term2
-    
-def getsim_file(infilename, outfilename, method='rvspagerank', direction=DIR_BOTH, sim_method=None, entity_encoding=ENTITY_ID):
+def getsim_file(infilename, outfilename, method='rvspagerank', direction=DIR_BOTH, sim_method=None):
     """ Batched (file) similarity.
     
     Args: 
         infilename: tsv file in the format of pair1    pair2   [goldstandard]
         outfilename: tsv file in the format of pair1    pair2   similarity
         direction: 0 for in, 1 for out, 2 for all
-        entity_encoding: how the entity is represented in the dataset
-                        ENTITY_TITLE = simple entity
-                        ENTITY_ID = integer id
-                        ENTITY_ID_STR = str id
-                        ENTITY_ID_ID_STR = id_entityid
                         
     Returns:
         vector of scores, and Spearmans's correlation if goldstandard is given
@@ -276,7 +269,8 @@ def getsim_file(infilename, outfilename, method='rvspagerank', direction=DIR_BOT
         if len(row)>3: 
             gs.append(row[3]);
             
-        term1, term2 = encode_entity(row[1], row[2], entity_encoding)
+        term1 = encode_entity(row[1], method, get_id=True)
+        term2 = encode_entity(row[2], method, get_id=True)
             
         if (term1 is None) or (term2 is None):
             sim=0;
@@ -309,7 +303,7 @@ def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=N
     dsdata=readds(infilename, usecols=[0]);
     scores=[];
     for row in dsdata.itertuples():        
-        wid = title2id(row[1])
+        wid = encode_entity(row[1], method, get_id=True)
         if wid is None:
             em=pd.Series();
         else:
