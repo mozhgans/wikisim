@@ -7,6 +7,7 @@ import scipy as sp
 import pandas as pd
 import cPickle as pickle
 import MySQLdb
+from collections import defaultdict
 
 from utils import * # uncomment
 
@@ -42,6 +43,13 @@ def reopen():
     if _db is None:
         _db = MySQLdb.connect(host="127.0.0.1",port=3307,user='root',passwd="emilios",db="enwiki20160305")
         _cursor = _db.cursor()
+
+def disable_cache():
+    global DISABLE_CACHE
+    DISABLE_CACHE=True
+def enable_cache():
+    global DISABLE_CACHE
+    DISABLE_CACHE=False
         
 def load_table(tbname, limit=-1):
     """ Returns a list, containing a whole table     
@@ -93,7 +101,7 @@ def ids2title(wids):
     .format(wid_str, order);
     _cursor.execute(query);
     rows = _cursor.fetchall();
-    rows_dict = dict(rows)
+    rows_dict = defaultdict(lambda: None, rows)
     titles = [rows_dict[wid] for wid in wids]
     return titles;
 

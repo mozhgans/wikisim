@@ -1,6 +1,8 @@
 import sys
 from optparse import OptionParser
 
+#sys.path.insert(0,'..')
+#from wikisim.calcsim import *
 from wsd import *
 
 np.seterr(all='raise')
@@ -25,22 +27,17 @@ dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
           os.path.join(home,'backup/datasets/ner/aquaint.json') 
           ]
 
-dsnames = [os.path.join(home,'backup/datasets/ner/wiki-mentions.5000.json'),
-          ]
-dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
-          os.path.join(home,'backup/datasets/ner/msnbc.json'),
-          os.path.join(home,'backup/datasets/ner/aquaint.json') 
-          ]
 
 methods = (('ams', DIR_BOTH,'ilp'), ('wlm', DIR_IN,'ilp'),('rvspagerank', DIR_BOTH, 'ilp'))
 methods = (('word2vec.ehsan', DIR_BOTH,'ilp') ,('rvspagerank', DIR_BOTH, 'keyq'),('rvspagerank', DIR_BOTH, 'keydisamb'))
 methods = (('word2vec.ehsan', DIR_BOTH, 'keydisamb'), ('word2vec.ehsan', DIR_BOTH,'entitycontext') ,('rvspagerank', DIR_BOTH, 'entitycontext'))
+methods = (('rvspagerank', DIR_BOTH, 'simplecontext'),('word2vec.ehsan', DIR_BOTH, 'simplecontext'))
 #methods = (('rvspagerank', DIR_BOTH, 'ilp'),('word2vec.ehsan', DIR_BOTH, 'ilp'),)
-methods = (('word2vec.ehsan', DIR_BOTH,'ilp') ,)
-methods = (('word2vec.ehsan', DIR_BOTH,'word2vec_word_context') ,)
+#methods = (('word2vec.ehsan', DIR_BOTH, 'simplecontext'),)
 
 #methods = (('word2vec.500', None,'context4_4'),)
-#methods = (('rvspagerank', DIR_BOTH,'keydisamb'),)
+methods = (('rvspagerank', DIR_BOTH, 'keydisamb'), ('rvspagerank', DIR_BOTH, 'entitycontext') )
+
 
 max_t = options.max_t
 max_count = options.max_count
@@ -103,15 +100,15 @@ for method, direction, op_method in methods:
                     print "%s:\tS=%s\n\tM=%s" % (count, json.dumps(S, ensure_ascii=False).encode('utf-8'),json.dumps(M, ensure_ascii=False).encode('utf-8'))
                     sys.stdout.flush()
                     
-                C = generate_candidates(S, M, max_t=max_t, enforce=False)
+                C = generate_candidates(S, M, max_t=max_t, enforce=True)
                 
                 try:
-                    ids, titles = disambiguate_driver(S,M, C, ws=0, method=method, direction=direction, op_method=op_method)
+                    ids, titles = disambiguate_driver(C, ws, method=method, direction=direction, op_method=op_method)
                     tp = get_tp(M, ids) 
                 except Exception as ex:
                     tp = (None, None)
                     print "[Error]:\t", type(ex), ex
-                    #raise
+                    raise
                     continue
                 
                 overall.append(tp)

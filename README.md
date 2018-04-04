@@ -15,4 +15,7 @@ This is a simple and step by step explanation of calculating semantic relatednes
 * Source Code: (https://github.com/asajadi/wikisim)
 
 
+# Installation
+## install [conda] (https://www.anaconda.com/download)
+## conda env create -f environment.yml
 

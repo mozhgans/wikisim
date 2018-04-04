@@ -303,7 +303,7 @@ def getembed_file(infilename, outfilename, direction, get_titles=False, cutoff=N
     dsdata=readds(infilename, usecols=[0]);
     scores=[];
     for row in dsdata.itertuples():        
-        wid = encode_entity(row[1], method, get_id=True)
+        wid = encode_entity(row[1], method='rvspagerank', get_id=True)
         if wid is None:
             em=pd.Series();
         else:

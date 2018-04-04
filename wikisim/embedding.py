@@ -1,4 +1,7 @@
 
+from __future__ import division
+
+
 from wikipedia import * # uncomment
 from pagerank import * # uncomment
 import gensim
@@ -66,7 +69,7 @@ def _concept_embedding_io(wid, direction):
 
     (ids, links) = getneighbors(wid, direction);
     if ids:
-        scores = pagerank_sparse_power(create_csr(links), reverse=True)
+        scores = moler_pagerank_sparse_power(create_csr(links), reverse=True)
         em = pd.Series(scores, index=ids) 
     else:
         em = pd.Series([], index=[])  
