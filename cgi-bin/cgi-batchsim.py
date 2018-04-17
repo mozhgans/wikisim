@@ -85,12 +85,9 @@ with open(resultfile,'w') as f:
 task=form.getvalue('task')
 
 direction =int(form.getvalue('dir'))
-log('cutoff%s', 'cutoff');
 
 cutoff=form.getvalue('cutoff')
 cutoff = None if cutoff.lower()=="all" else int(cutoff)
-
-log('cutoff%s', cutoff);
 
 
 if task == 'sim':
@@ -126,3 +123,4 @@ with open(resultfile,'w') as f:
 print json.dumps({"redirect":"out/results.html"})
 
 
+log('finished');

@@ -56,11 +56,25 @@ def generate_candidates(S, M, max_t=10, enforce=False):
     return  candslist 
 
 def disambiguate_popular(C):
+    '''Disambiguate using only popularity
+        Input:
+            C: Candlist
+        Output:
+            Disambiguated entities
+    '''
+    
     ids = [c[0][0] for c in C ]
     titles= ids2title(ids)
     return ids, titles
 
 def get_sim_matrix(candslist,method, direction):
+    ''' Computes a matrix of pairwise similarities
+        Input: 
+            candslist: The list of candidates
+            method: Similarity Method
+        Output:
+            The similarity matrix matrix
+    '''
     concepts=  list(chain(*candslist))
     concepts=  list(set(c[0] for c in concepts))
     sims = pd.DataFrame(index=concepts, columns=concepts)
@@ -70,6 +84,12 @@ def get_sim_matrix(candslist,method, direction):
     return sims     
 
 def get_tp(gold_titles, ids):
+    """Returns true positive number
+       Inputs: goled_titles: The correct titles
+               ids: The given ids
+       Outputs: returns a tuple of (true_positives, total_number_of_ids)
+    
+    """
     tp=0
     for m,id2 in zip(gold_titles, ids):
         if title2id(m[1]) == id2:
@@ -77,6 +97,11 @@ def get_tp(gold_titles, ids):
     return [tp, len(ids)]
 
 def get_prec(tp_list):
+    """Returns precision
+       Inputs: a list of (true_positive and total number) lists
+       Output: Precision
+    """
+    
     overall_tp = 0
     simple_count=0
     overall_count=0

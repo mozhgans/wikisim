@@ -3,8 +3,9 @@ from optparse import OptionParser
 
 #sys.path.insert(0,'..')
 #from wikisim.calcsim import *
-from wikify import *
+from wsd import *
 import time
+from random import shuffle
 np.seterr(all='raise')
 
 # parser = OptionParser()
@@ -27,7 +28,7 @@ max_t = 20
 max_count = -1
 verbose = True
 ws = 5
-
+rows=10000
 
 fresh_restart=True
 
@@ -37,12 +38,9 @@ fresh_restart=True
 
 dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
            os.path.join(home,'backup/datasets/ner/wiki-mentions.5000.json'),
-           os.path.join(home,'backup/datasets/ner/aida.json'), 
-           os.path.join(home,'backup/datasets/ner/msnbc.json'),
-           os.path.join(home,'backup/datasets/ner/aquaint.json') 
           ]
 
-dsnames = [os.path.join(home,'backup/datasets/ner/wiki-mentions.30000.5000.json')]
+#dsnames = [os.path.join(home,'backup/datasets/ner/wiki-mentions.30000.5000.json')]
 
           
 # dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
@@ -50,7 +48,8 @@ dsnames = [os.path.join(home,'backup/datasets/ner/wiki-mentions.30000.5000.json'
 #           ]
 
 
-methods = ('popularity', 'keydisamb', 'entitycontext', 'context2context', 'context2profile','learned')
+methods = ('context2context', 'context2profile')
+methods = ('context2context',)
 
 
 
@@ -111,10 +110,12 @@ for method in methods:
                     sys.stdout.flush()
                     
                 C = generate_candidates(S, M, max_t=max_t, enforce=False)
+                for c in C:
+                    shuffle(c)
                 
                 try:
                     #ids, titles = disambiguate_driver(S,M, C, ws=0, method=method, direction=direction, op_method=op_method)
-                    ids, titles = wikify(S,M,C, ws, method=method)
+                    ids, titles = wsd(S,M,C, ws, method=method, rows=rows)
                     tp = get_tp(M, ids) 
                 except Exception as ex:
                     tp = (None, None)

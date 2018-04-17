@@ -7,149 +7,6 @@ from itertools import chain
 from itertools import combinations
 from itertools import product
 
-def contextdisamb_2(candslist, direction=DIR_OUT):
-    cframelist=[]
-    cveclist_bdrs = []
-    for cands in candslist:
-        cands_rep = [conceptrep(c[0], direction=direction, get_titles=False) for c in cands]
-        cveclist_bdrs += [(len(cframelist), len(cframelist)+len(cands_rep))]
-        cframelist += cands_rep
-
-    #print "ambig_count:", ambig_count
-    cvec_fr = pd.concat(cframelist, join='outer', axis=1)
-    cvec_fr.fillna(0, inplace=True)
-    cvec_arr = cvec_fr.as_matrix().T
-    i=0
-    for cframe in cframelist:
-        if cframe.empty:
-            cvec_arr = np.insert(cvec_arr,i,0, axis=0)
-        i+=1    
-    
-    aggr_cveclist = np.zeros(shape=(len(candslist),cvec_arr.shape[1]))
-    for i in range(len(cveclist_bdrs)):
-        b,e = cveclist_bdrs[i]
-        aggr_cveclist[i]=cvec_arr[b:e].sum(axis=0)
-    
-    res=[]
-    for i in range(len(candslist)):
-        cands = candslist[i]
-        b,e = cveclist_bdrs[i]
-        cvec = cvec_arr[b:e]
-        convec=aggr_cveclist[:i].sum(axis=0) + aggr_cveclist[i+1:].sum(axis=0)
-
-        maxd=-1
-        index = -1
-        mi=0
-
-        for v in cvec:
-            d = 1-sp.spatial.distance.cosine(convec, v);
-            if d>maxd:
-                maxd=d
-                index=mi
-            mi +=1
-        if index==-1:
-            index=0
-        res.append(cands[index][0]) 
-        b,e = cveclist_bdrs[i]
-        cveclist_bdrs[i] = (b+index,b+index+1)
-        
-        aggr_cveclist[i] =  cvec_arr[b:e][index]
-        
-        candslist[i] = candslist[i][index][0]
-        
-        
-
-    titles = ids2title(res)
-
-    return res, titles
-
-def contextdisamb_3(candslist, direction=DIR_OUT):
-    cframelist=[]
-    cveclist_bdrs = []
-    ambig_count=0
-    for cands in candslist:
-        if len(candslist)>1:
-            ambig_count += 1
-        cands_rep = [conceptrep(c[0], direction=direction, get_titles=False) for c in cands]
-        cveclist_bdrs += [(len(cframelist), len(cframelist)+len(cands_rep))]
-        cframelist += cands_rep
-
-    #print "ambig_count:", ambig_count
-        
-    cvec_fr = pd.concat(cframelist, join='outer', axis=1)
-    cvec_fr.fillna(0, inplace=True)
-    cvec_arr = cvec_fr.as_matrix().T
-    i=0
-    for cframe in cframelist:
-        if cframe.empty:
-            cvec_arr = np.insert(cvec_arr,i,0, axis=0)
-        i+=1    
-    
-    aggr_cveclist = np.zeros(shape=(len(candslist),cvec_arr.shape[1]))
-    for i in range(len(cveclist_bdrs)):
-        b,e = cveclist_bdrs[i]
-        aggr_cveclist[i]=cvec_arr[b:e].sum(axis=0)
-    from itertools import izip
-    resolved = 0
-    for resolved in range(ambig_count):
-        cands_score_list=[]        
-        for i in range(len(candslist)):
-            cands = candslist[i]
-            b,e = cveclist_bdrs[i]
-            cvec = cvec_arr[b:e]
-            convec=aggr_cveclist[:i].sum(axis=0) + aggr_cveclist[i+1:].sum(axis=0)
-            D=[]    
-            for v in cvec:
-                d = 1-sp.spatial.distance.cosine(convec, v);
-                if np.isnan(d):
-                    d=0
-                D.append(d)
-            D=sorted(enumerate(D), key=lambda x: -x[1])
-            cands_score_list.append(D)
-
-        max_concept, _ = max(enumerate(cands_score_list), key=lambda x: (x[1][0][1]-x[1][1][1]) if len(x[1])>1 else -1)
-        max_candidate = cands_score_list[max_concept][0][0]
-        
-        b,e = cveclist_bdrs[max_concept]
-        cveclist_bdrs[max_concept] = (b+max_concept,b+max_concept+1)
-        aggr_cveclist[max_concept] =  cvec_arr[b:e][max_candidate]
-        
-        candslist[max_concept] = [candslist[max_concept][max_candidate]]
-                                  
-        #cframelist[max_index] =  [cframelist[max_index][cands_score_list[max_index][0][0]]]
-        #break
-            #print index,"\n"
-    res = [c[0][0] for c in candslist]
-    titles = ids2title(res)
-
-    return res, titles        
-    
-    
-#########################
-# KeyBased Method
-#########################
-# def simple_context_coherence(candslist, direction, method):
-#     cvec_arr, cveclist_bdrs =  get_candidate_representations(candslist, direction, method)        
-#     convec = cvec_arr.sum(axis=0)
-#     from itertools import izip
-#     res=[]
-#     for i in range(len(candslist)):
-#         cands = candslist[i]
-#         b,e = cveclist_bdrs[i]
-#         cvec = cvec_arr[b:e]
-        
-#         maxd=-1
-#         mi=0
-#         for v in cvec:
-#             d = 1-sp.spatial.distance.cosine(convec, v);
-#             if d>maxd:
-#                 maxd=d
-#                 index=mi
-#             mi +=1
-#         res.append(cands[index][0]) 
-#         #print index,"\n"
-#     titles = ids2title(res)
-#     return res, titles
 
 def coherence_scores_driver(C, ws, method='rvspagerank', direction=DIR_BOTH, op_method="keydisamb"):
     """ Assigns a score to every candidate 
@@ -520,6 +377,16 @@ def word_context_disambiguate(S, M, candslist, ws ):
  
 
 def tagme_vote(c, a, candslist, simmatrix, pop):
+    ''' Calculate the vote for an antity
+        Input:
+            c: The given entity
+            a: Index of the mention whose candidate is considered to be key entity
+            simmatrix: Similarity Matrix
+            pop: Whether or not consider popularity
+        Output:
+            Returns the vote value
+
+    '''
     v = 0
     for b in  range(len(candslist)):
         if a==b:
@@ -534,6 +401,15 @@ def tagme_vote(c, a, candslist, simmatrix, pop):
     return v
 
 def tagme(candslist, method, direction, pop=False):
+    ''' The TagMe method for disambiguation
+        Input:
+            candslist: The list of candidates
+            method: The similarity method
+            direction: embedding type
+            pop: Whether or not consider popularity
+        Output:
+        Resolved ids and entities
+    '''
     res=[]
     simmatrix = get_sim_matrix(candslist, method, direction)
     for i in range(len(candslist)):

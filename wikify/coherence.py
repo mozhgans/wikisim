@@ -1,6 +1,11 @@
+"""Diiferent coherence (context, key-entity) calculation, and 
+    disambiguation.
+"""
+from __future__ import division
 
-from wikify_util import *
+from wsd_util import *
 import numpy as np
+
 def get_candidate_representations(candslist, direction, method):
     '''returns an array of vector representations. 
        Inputs: 
@@ -25,8 +30,6 @@ def get_candidate_representations(candslist, direction, method):
         cands_rep = [conceptrep(encode_entity(c[0], method, get_id=False), method=method, direction=direction, get_titles=False) for c in cands]
         cveclist_bdrs += [(len(cframelist), len(cframelist)+len(cands_rep))]
         cframelist += cands_rep
-
-    #print "ambig_count:", ambig_count
         
     cvec_fr = pd.concat(cframelist, join='outer', axis=1)
     cvec_fr.fillna(0, inplace=True)
@@ -37,8 +40,8 @@ def entity_to_context_scores(candslist, direction, method):
     ''' finds the similarity between each entity and its context representation
         Inputs:
             candslist: the list of candidates [[(c11, p11),...(c1k, p1k)],...[(cn1, pn1),...(c1m, p1m)]]
-            cvec_arr: the array of all embeddings for the candidates
-            cveclist_bdrs: The embedding vector for each candidate: [[c11,...c1k],...[cn1,...c1m]]
+            direction: embedding direction
+            method: similarity method
         Returns:
            cvec_arr: Candidate embeddings, a two dimensional array, each column 
            cveclist_bdrs: a list of pairs (beginning, end), to indicate where the 
@@ -113,19 +116,17 @@ def find_key_concept(candslist, direction, method):
     key_entity_vector =  cvec_arr[b:e][key_entity]    
     return cvec_arr, cveclist_bdrs, key_concept, key_entity, key_entity_vector
 
-def keyentity_candidate_scores(candslist, direction, method, ver):
+def keyentity_candidate_scores(candslist, direction, method):
     '''returns entity scores using key-entity scoring 
        Inputs: 
            candslist: candidate list [[(c11, p11),...(c1k, p1k)],...[(cn1, pn1),...(c1m, p1m)]]
            direction: embedding direction
            method: similarity method
-           ver: 1 for the method explained in the paper
            
        Returns:
            Scores [[s11,...s1k],...[sn1,...s1m]] where sij is cij similarity to the key-entity
     '''
     
-        
     cvec_arr, cveclist_bdrs, key_concept, key_entity, key_entity_vector = find_key_concept(candslist, direction, method)
     
     # Iterate 
@@ -150,7 +151,7 @@ def keyentity_candidate_scores(candslist, direction, method, ver):
 
 
 
-def coherence_scores_driver(C, ws, method='rvspagerank', direction=DIR_BOTH, op_method="keydisamb"):
+def coherence_scores_driver(C, ws=5, method='rvspagerank', direction=DIR_BOTH, op_method="keydisamb"):
     """ Assigns a score to every candidate 
         Inputs:
             C: Candidate list [[(c11, p11),...(c1k, p1k)],...[(cn1, pn1),...(c1m, p1m)]]
@@ -158,10 +159,10 @@ def coherence_scores_driver(C, ws, method='rvspagerank', direction=DIR_BOTH, op_
             method: similarity method
             direction: embedding type
             op_method: disambiguation method, either keyentity or entitycontext
-            
+        Output:
+            Candidate Scores
         
     """
-    
     windows = [[start, min(start+ws, len(C))] for start in range(0,len(C),ws) ]
     last = len(windows)
     if last > 1 and windows[last-1][1]-windows[last-1][0]<2:
@@ -171,7 +172,7 @@ def coherence_scores_driver(C, ws, method='rvspagerank', direction=DIR_BOTH, op_
     for w in windows:
         chunk_c = C[w[0]:w[1]]
         if op_method == 'keydisamb':
-            scores += keyentity_candidate_scores(chunk_c, direction, method,4)
+            scores += keyentity_candidate_scores(chunk_c, direction, method)
             
         if op_method == 'entitycontext':
             _, _, candslist_scores = entity_to_context_scores(chunk_c, direction, method);

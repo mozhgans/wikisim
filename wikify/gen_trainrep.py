@@ -1,14 +1,18 @@
-
-from wikify import *
+""" Create a train-set 
+    entity_id, query_id, scores1, score2, ..., scoren, true/false (is it a correct entity)
+"""
+from __future__ import division
+from wsd import *
 sys.stdout.flush()
-max_t=5
-ws=5
-outdir = os.path.join(baseresdir, 'wikify')
-outfile = os.path.join(home,'backup/datasets/ner/trainrepository.30000.5000.tsv')
+
+max_t=20
+max_count=15000
+
+outdir = os.path.join(baseresdir, 'wsd')
+outfile = os.path.join(home,'backup/datasets/ner/trainrepository.%s.30000.tsv'%(max_count,))
 
 dsname = os.path.join(home,'backup/datasets/ner/wiki-mentions.30000.json')
 
-max_count=5000
 count = 0          
 with open(dsname,'r') as ds, open(outfile,'w') as outf:
     qid=0
@@ -19,8 +23,7 @@ with open(dsname,'r') as ds, open(outfile,'w') as outf:
         count +=1        
         print "%s:\tS=%s\n\tM=%s" % (count, json.dumps(S, ensure_ascii=False).encode('utf-8'),json.dumps(M, ensure_ascii=False).encode('utf-8'))        
         C = generate_candidates(S, M, max_t=max_t, enforce=False)
-        #print C
-        all_scores=get_all_scores(S,M,C, ws, 10)
+        all_scores=get_all_scores(S,M,C)
         for i in  range(len(C)):
             m=M[i]
             cands = C[i]
