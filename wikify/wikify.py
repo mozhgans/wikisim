@@ -1,44 +1,32 @@
-""" Train a LambdaMart (LTR) Method
-"""
+from __future__ import division
+from mention_detection import *
 
-def split_solr_text(text,tags):
-    start=0
-    termindex=0
-    t=[]
-    mentions=[]
-    # pass 1, adjust partial mentions. 
-    # approach one, expand (the other could be shrink)
-    
-    for tag in tags:
-        seg = text[start:tag[1]]
-        t += seg.strip().split()
-        mentions.append([len(t),'UNKNOWN'])
-        t+=[" ".join(text[tag[1]:tag[3]].split())]
-        start = tag[3]
-        
-    t += text[start:].strip().split()
-    return t, mentions
 
-def annotate_with_solrtagger(text):
-    
-    addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
-    params={'overlaps':'LONGEST_DOMINANT_RIGHT', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on'}
-    text=solr_escape(text)
-    r = requests.post(addr, params=params, data=text)    
 
-    S,M = splittext(text,r.json()['tags'])
+
+def wikify_string(line, mentionmethod=CORE_NLP):
+    S,M = detect_mentions(line, mentionmethod)      
+    C = generate_candidates(S, M, max_t=20, enforce=False)
+    E = wsd(S, M, C, method='learned')
+    for m,e in zip(M,E[1]):
+        m[1]=e
     return S,M
 
-CORE_NLP=0
-LEARNED_MENTION=1
 def wikify_a_line(line, mentionmethod=CORE_NLP):
-    S,M = annotate_with_solrtagger(line)
-    C = generate_candidates(S, M, max_t=10, enforce=False)
-    E = wsd(S, M, C, ws=5, method='learned', rows=10)
-    return E
-
+    ''' Annotate a single line 
+        Input:
+            line: The given string
+            mentionmethod: The mention detection method
+        Output:
+            Annotated Sentence inwhich mentiones are hyper-linked to the Wikipedia concepts
+    '''
+    S, M = wikify_string(line, mentionmethod=CORE_NLP) 
+    for m in M: 
+        S[m[0]]="<a href=https://en.wikipedia.org/wiki/%s>%s</a>"  % (S[m[0]],m[1])
+    S_reconcat = " ".join(S)
+    return S_reconcat
+            
 def wikify_api(text, mentionmethod=CORE_NLP):
-    outlist=[]
     for line in text.splitlines():
         outlist.append(wikify_a_line(line, mentionmethod))
     return "\n".join(outlist)
@@ -48,4 +36,5 @@ def wikify_from_file_api(infilename, outfilename, mentionmethod=CORE_NLP):
         for line in infilename.readlines():
             wikified = wikify_a_line(text, mentionmethod)
             outfile.write(wikified + "\n")
-        
+
+            

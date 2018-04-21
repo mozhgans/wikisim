@@ -68,6 +68,8 @@ def entity_to_context_scores(candslist, direction, method):
         S=[]    
         for v in cvec:
             try:
+                # We have zero vectors, so this can rais an exception
+                # or return none                
                 s = 1-sp.spatial.distance.cosine(convec, v);
             except:
                 s=0                
@@ -139,6 +141,8 @@ def keyentity_candidate_scores(candslist, direction, method):
 
         for v in cvec:
             try:
+                # We have zero vectors, so this can rais an exception
+                # or return none                
                 d = 1-sp.spatial.distance.cosine(key_entity_vector, v);
             except:
                 d=0                

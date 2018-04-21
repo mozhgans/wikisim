@@ -7,9 +7,13 @@ sys.stdout.flush()
 
 max_t=20
 max_count=15000
+#np.seterr(all='raise')
 
 outdir = os.path.join(baseresdir, 'wsd')
 outfile = os.path.join(home,'backup/datasets/ner/trainrepository.%s.30000.tsv'%(max_count,))
+if os.path.isfile(outfile): 
+    sys.stderr.write(outfile + " already exist!\n")
+    #sys.exit()
 
 dsname = os.path.join(home,'backup/datasets/ner/wiki-mentions.30000.json')
 
