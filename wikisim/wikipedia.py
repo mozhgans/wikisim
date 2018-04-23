@@ -93,7 +93,8 @@ def ids2title(wids):
     Returns: 
         The list of titles
     """
-
+    if not wids:
+        return []
     wid_list = [str(wid) for wid in wids] ;
     order = ','.join(['page_id'] + wid_list) ;
     wid_str = ",".join(wid_list)

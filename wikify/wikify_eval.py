@@ -1,9 +1,10 @@
+"""Evaluating the wsd module. It assumes the sentences are already segmented
+"""
+from wikify import *
 import sys
 from optparse import OptionParser
-
 #sys.path.insert(0,'..')
 #from wikisim.calcsim import *
-from wsd import *
 import time
 from random import shuffle
 np.seterr(all='raise')
@@ -27,31 +28,15 @@ np.seterr(all='raise')
 max_t = 20
 max_count = -1
 verbose = True
-ws = 5
-rows=10000
 
 fresh_restart=True
-
-#word2vec_path = os.path.join(home, 'backup/wikipedia/WikipediaClean5Negative300Skip10.Ehsan/WikipediaClean5Negative300Skip10')
-#word2vec_path = os.path.join(home, '/users/grad/sajadi/backup/wikipedia/20160305/embed/word2vec.enwiki-20160305-replace_surface.1.0.500.10.5.15.5.5/word2vec.enwiki-20160305-replace_surface.1.0.500.10.5.15.5.5')
 
 
 dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
            os.path.join(home,'backup/datasets/ner/wiki-mentions.5000.json'),
           ]
 
-#dsnames = [os.path.join(home,'backup/datasets/ner/wiki-mentions.30000.5000.json')]
-
-          
-# dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
-#            os.path.join(home,'backup/datasets/ner/msnbc.json'),
-#           ]
-
-
-methods = ('context2context', 'context2profile')
-methods = ('context2context',)
-
-
+mentionmethods = (CORE_NLP, LEARNED_MENTION)
 
 outdir = os.path.join(baseresdir, 'wikify')
 # if not os.path.exists(outdir): #Causes synchronization problem
@@ -69,11 +54,7 @@ detailedresname=  os.path.join(outdir, 'detailedreslog.txt')
 
 
 
-for method in methods:
-    if 'word2vec' in method:
-        gensim_loadmodel(word2vec_path)
-        print "loaded"
-        sys.stdout.flush()
+for mentionmethod in mentionmethods:
     for dsname in dsnames:
         start = time.time()
         
@@ -83,7 +64,9 @@ for method in methods:
         
         tmpfilename = os.path.join(tmpdir, 
                                    '-'.join([method, str(max_t), str(ws), os.path.basename(dsname)]))
-        overall=[]
+        overall_tp=[]
+        overall_fp=[]
+        overall_tn=[]
         start_count=-1
         if os.path.isfile(tmpfilename) and not fresh_restart:
             with open(tmpfilename,'r') as tmpf:
@@ -91,7 +74,9 @@ for method in methods:
                     js = json.loads(line.strip())
                     start_count = js['no']
                     if js['tp'] is not None:
-                        overall.append(js['tp'])
+                        overall_tp.append(js['tp'])
+                        overall_fp.append(js['fp'])
+                        overall_tn.append(js['tn'])
         
         if start_count !=-1:
             print "Continuing from\t", start_count
@@ -109,22 +94,13 @@ for method in methods:
                     print "%s:\tS=%s\n\tM=%s" % (count, json.dumps(S, ensure_ascii=False).encode('utf-8'),json.dumps(M, ensure_ascii=False).encode('utf-8'))
                     sys.stdout.flush()
                     
-                C = generate_candidates(S, M, max_t=max_t, enforce=False)
-                for c in C:
-                    shuffle(c)
+                S2,M2 = wikify_a_line(line, mentionmethod=mentionmethod)
+                mention_measures = get_sentence_measures(S2, M2, S, M, wsd_measure=False)
+                mention_overall.append(mention_measures)
                 
-                try:
-                    #ids, titles = disambiguate_driver(S,M, C, ws=0, method=method, direction=direction, op_method=op_method)
-                    ids, titles = wsd(S,M,C, ws, method=method, rows=rows)
-                    tp = get_tp(M, ids) 
-                except Exception as ex:
-                    tp = (None, None)
-                    print "[Error]:\t", type(ex), ex
-                    raise
-                    continue
+                wikify_measures = get_sentence_measures(S2, M2, S, M, wsd_measure=True)
+                wikify_overall.append(wikify_measures)
                 
-                overall.append(tp)
-                tmpf.write(json.dumps({"no":count, "tp":tp})+"\n")
                 if (max_count !=-1) and (count >= max_count):
                     break
                     
@@ -137,8 +113,13 @@ for method in methods:
         
         logres(detailedresname, '%s',  json.dumps(detailedres))
         
-        micro_prec, macro_prec = get_prec(overall)        
-        logres(resname, '%s\t%s\t%s\t%s\t%s\t%s\t%s', method, max_t , ws, 
-               dsname, micro_prec, macro_prec, elapsed)
+        mention_overall_measures = get_overall_measures(mention_overall)    
+        output = ('mention_evaluation',method, max_t , dsname) + mention_overall_measures + (elapsed,)
+        
+        logres(resname, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n', output)
+        
+        wikify_overall_measures = get_overall_measures(wikify_overall)  
+        output = ('wikify_evaluation',method, max_t , dsname) + wikify_overall_measures + (elapsed,)
+            
 
 print "done"

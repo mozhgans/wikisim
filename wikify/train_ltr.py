@@ -5,7 +5,7 @@ import pyltr
 import pandas as pd
 import os
 from sklearn.preprocessing import MinMaxScaler
-import cPickle as pickle
+from sklearn.externals import joblib
 from wsd import *
 
 #Columns = [entity_id, qid, score0, score1, score5, label]
@@ -33,7 +33,7 @@ X_train = group.iloc[:,2:num_cols-1].as_matrix()
 ltr_preprocessor = MinMaxScaler()
 X_train=ltr_preprocessor.fit_transform(X_train)
 ltr_preprocessor_fn = os.path.join(home,'backup/datasets/ner/ltr_preprocessor.pkl')
-pickle.dump(ltr_preprocessor, open(ltr_preprocessor_fn, 'wb'))
+joblib.dump(ltr_preprocessor, open(ltr_preprocessor_fn, 'wb'))
 ####
 
 y_train = group.iloc[:,num_cols-1].as_matrix()
@@ -68,6 +68,6 @@ print 'Random ranking:', metric.calc_mean_random(qid_test, y_test)
 print 'Our model:', metric.calc_mean(qid_test, y_test, Ts_pred)
 
 model_file_name = os.path.join(home,'backup/datasets/ner/ltr.pkl')
-pickle.dump(model, open(model_file_name, 'wb'))
+joblib.dump(model, open(model_file_name, 'wb'))
 
 print 'Model saved'

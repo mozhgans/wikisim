@@ -4,9 +4,9 @@ from mention_detection import *
 
 
 
-def wikify_string(line, mentionmethod=CORE_NLP):
+def wikify_string(line, mentionmethod=CORE_NLP, max_t=20):
     S,M = detect_mentions(line, mentionmethod)      
-    C = generate_candidates(S, M, max_t=20, enforce=False)
+    C = generate_candidates(S, M, max_t=max_t, enforce=False)
     E = wsd(S, M, C, method='learned')
     for m,e in zip(M,E[1]):
         m[1]=e
@@ -27,9 +27,10 @@ def wikify_a_line(line, mentionmethod=CORE_NLP):
     return S_reconcat
             
 def wikify_api(text, mentionmethod=CORE_NLP):
+    outlist=[]
     for line in text.splitlines():
         outlist.append(wikify_a_line(line, mentionmethod))
-    return "\n".join(outlist)
+    return "\n".join(outlist).decode('utf-8')
 
 def wikify_from_file_api(infilename, outfilename, mentionmethod=CORE_NLP):
     with open(infilename) as infile, open(outfilename, 'w') as outfile:
