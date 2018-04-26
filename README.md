@@ -1,12 +1,21 @@
-# Calculating Semantic Relatedness using Wikipedia
+# Wikisim
+## Wikisim provides the following services:
+### Vector-Space Representation of Wikipedia Concepts
+### Semantic Relatedness between Wikipedia Concepts
+### Wikification: Entity Linking to Wikipedia
 
-* For a more detailed document and the main algorithm, check [this note book](wikisim/wikisim.ipynb)
+* For a more detailed document and the main algorithm, check:
+
+* [Wikisim Notebook](wikisim/wikisim.ipynb)
+This is a simple and step by step explanation of concept-representation and calculating semantic relatedness using Wikipedia. We start by preprocessing and building the api.
+
+* [Wikification Notebook](wikification/wikify.ipynb)
+This notbook contains Word-sense Disambiguation/Wikifaction modules
 
 * **Armin Sajadi** - Faculty of Computer Science
 * **Dr. Evangelos Milios** - Faculty of Computer Science
 * **Dr. Vlado Kešelj** – Faculty of Computer Science
 
-This is a simple and step by step explanation of calculating semantic relatedness using Wikipedia. We start by preprocessing and building the api, that is explained in the following papers papers:
 
 * Armin Sajadi, Evangelos E. Milios, Vlado Keselj, "Vector Space Representation of Concepts Using Wikipedia Graph Structure", Submitted to NLDB 2017
 

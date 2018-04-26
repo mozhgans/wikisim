@@ -36,7 +36,8 @@ form = cgi.FieldStorage()
 # Get filename here.
 
 fileitem = form['file']
-jobid = form.getvalue('jobid')
+import time
+jobid = time.strftime("%Y%m%d-%H%M%S")
 
 #Test if the file was uploaded
 if fileitem.filename:
@@ -120,7 +121,7 @@ resdiv.append(new_tag)
 with open(resultfile,'w') as f:
     f.write(sp.prettify())
 
-print json.dumps({"redirect":"out/results.html"})
+print json.dumps({"redirect":"out/results.html", "jobid":jobid})
 
 
 log('finished');

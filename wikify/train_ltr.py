@@ -10,8 +10,9 @@ from wsd import *
 
 #Columns = [entity_id, qid, score0, score1, score5, label]
 outdir = os.path.join(baseresdir, 'wikify')
-tr_file_name = os.path.join(home,'backup/datasets/ner/trainrepository.15000.30000.tsv')
-data=pd.read_table(tr_file_name, header=None)
+tr_file_name = os.path.join(home,'backup/datasets/ner/trainrepository.1000.30000.tsv')
+nrows=1000
+data=pd.read_table(tr_file_name, nrows=nrows, header=None)
 
 # Can't shuffle straighforwardly, I should group by quid, the shuffle
 # But I guess shuffling is done in the estimator
@@ -32,7 +33,7 @@ X_train = group.iloc[:,2:num_cols-1].as_matrix()
 # Train the transformer and preprocess X_train
 ltr_preprocessor = MinMaxScaler()
 X_train=ltr_preprocessor.fit_transform(X_train)
-ltr_preprocessor_fn = os.path.join(home,'backup/datasets/ner/ltr_preprocessor.pkl')
+ltr_preprocessor_fn = os.path.join(home,'backup/datasets/ner/models/ltr_preprocessor.%s.pkl' %(nrows,))
 joblib.dump(ltr_preprocessor, open(ltr_preprocessor_fn, 'wb'))
 ####
 
@@ -60,6 +61,8 @@ monitor = pyltr.models.monitors.ValidationMonitor(
      X_validate, y_validate, qid_validate, metric=pyltr.metrics.NDCG(k=10), stop_after=250)
 model = pyltr.models.LambdaMART(n_estimators=300, learning_rate=0.1, verbose = 1)
 #lmart.fit(TX, TY, Tqid, monitor=monitor)
+print "Training, sample_count: %s" % (nrows)
+
 model.fit(X_train, y_train, qid_train, monitor=monitor)
 
 metric = pyltr.metrics.NDCG(k=10)
@@ -67,7 +70,7 @@ Ts_pred = model.predict(X_test)
 print 'Random ranking:', metric.calc_mean_random(qid_test, y_test)
 print 'Our model:', metric.calc_mean(qid_test, y_test, Ts_pred)
 
-model_file_name = os.path.join(home,'backup/datasets/ner/ltr.pkl')
+model_file_name = os.path.join(home,'backup/datasets/ner/models/ltr.%s.pkl'%(nrows,))
 joblib.dump(model, open(model_file_name, 'wb'))
 
 print 'Model saved'

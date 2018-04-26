@@ -6,7 +6,7 @@ from wsd import *
 sys.stdout.flush()
 
 max_t=20
-max_count=15000
+max_count=1000
 #np.seterr(all='raise')
 
 outdir = os.path.join(baseresdir, 'wsd')
