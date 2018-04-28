@@ -21,7 +21,7 @@ __maintainer__ = "Armin Sajadi"
 __email__ = "sajadi@cs.dal.ca"
 __status__ = "Development"
 
-MODELDIR = os.path.join(home ,"backup/datasets/ner/models");
+MODELDIR = "../models";
 
 session = requests.Session()
 http_retries = Retry(total=20,

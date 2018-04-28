@@ -35,18 +35,14 @@ fresh_restart=False
 dsnames = [os.path.join(home, dsdir_ner, 'kore.json'),
           os.path.join(home,  dsdir_ner, 'wiki-mentions.5000.json'),
 #          os.path.join(home,  dsdir_ner, 'aida.json'),  
-          os.path.join(home,  dsdir_ner, 'msnbc.json'),
-          os.path.join(home,  dsdir_ner, 'aquaint.json') 
-          ]
-
-dsnames = [ 
-          os.path.join(home,  dsdir_ner, 'MSNBC.txt.json'),
-          os.path.join(home,  dsdir_ner, 'AQUAINT.txt.json') 
+          os.path.join(home,  dsdir_ner, 'msnbc.txt.json'),
+          os.path.join(home,  dsdir_ner, 'aquaint.txt.json') 
           ]
 
 
-mentionmethods = (LEARNED_MENTION)
+
 mentionmethods = (LEARNED_MENTION, CORE_NLP)
+mentionmethods = (LEARNED_MENTION,)
 
 outdir = os.path.join(baseresdir, 'wikify')
 # if not os.path.exists(outdir): #Causes synchronization problem
@@ -63,90 +59,93 @@ detailedresname=  os.path.join(outdir, 'detailedreslog.txt')
 #clearlog(detailedresname)
 
 
-svc_nrows, svc_cv = SVC_MODEL_HIGH_RECALL_NROWS, SVC_MODEL_HIGH_RECALL_CV
-svc_nrows, svc_cv = 30000, 20
-
-load_mention_model(svc_nrows, svc_cv)
-
+svc_params = ((SVC_MODEL_HIGH_PRECISION_NROWS, SVC_MODEL_HIGH_PRECISION_CV), 
+              (SVC_MODEL_HIGH_RECALL_NROWS, SVC_MODEL_HIGH_RECALL_CV))
+svc_params = ((50000,1), (50000,20))
 
 
-ltr_nrows=10000
+
+ltr_nrows=50000
 load_wsd_model(ltr_nrows)
 
 
 for mentionmethod in mentionmethods:
-    for dsname in dsnames:
-        start = time.time()
-        
-        print "dsname: %s, mentionmethods: %s, max_t: %s ..."  % (dsname,
-                mentionmethods, max_t)
-        sys.stdout.flush()
-        
-        tmpfilename = os.path.join(tmpdir, 
-                                   '-'.join([str(mentionmethod), str(max_t), str(svc_nrows), str(svc_cv), str(ltr_nrows) ,os.path.basename(dsname)]))
-        mention_overall=[]
-        wikify_overall=[]
-        start_count=-1
-        if os.path.isfile(tmpfilename) and not fresh_restart:
-            with open(tmpfilename,'r') as tmpf:
-                for line in tmpf:
-                    js = json.loads(line.strip())
-                    start_count = js['no']
-                    
-                    if js['mention_measures'] is not None:
-                        mention_overall.append(js['mention_measures'])
-                        
-                    if js['wikify_measures'] is not None:
-                        wikify_overall.append(js['wikify_measures'])
-        if start_count !=-1:
-            print "Continuing from\t", start_count
+    if mentionmethod == LEARNED_MENTION:
+        for svc_nrows, svc_cv in svc_params:
+            load_mention_model(svc_nrows, svc_cv)
             
-        count=0
-        with open(dsname,'r') as ds, open(tmpfilename,'a') as tmpf:
-            for line in ds:
-                if (max_count !=-1) and (count >= max_count):
-                    break
-                
-                js = json.loads(line.decode('utf-8').strip());
-                S = js["text"]
-                M = js["mentions"]
-                count +=1
-                if count <= start_count:
-                    continue
-                if verbose:
-                    print "%s:\tS=%s\n\tM=%s" % (count, json.dumps(S, ensure_ascii=False).encode('utf-8'),json.dumps(M, ensure_ascii=False).encode('utf-8'))
-                    sys.stdout.flush()
-                text= " ".join(S)    
-                #S2,M2 = detect_mentions(text, mentionmethod=mentionmethod)      
-                S2,M2 = wikify_string(text, mentionmethod=mentionmethod)
-                
-                mention_measures = get_sentence_measures(S2, M2, S, M, wsd_measure=False)
-                mention_overall.append(mention_measures)
-                
-                wikify_measures = get_sentence_measures(S2, M2, S, M, wsd_measure=True)
-                wikify_overall.append(wikify_measures)
-                
-                tmpf.write(json.dumps({"no":count, "mention_measures":mention_measures, "wikify_measures":wikify_measures})+"\n")
-                
-                    
+            for dsname in dsnames:
+                start = time.time()
 
-        elapsed = str(timeformat(int(time.time()-start)));
-        print "done"
-        detailedres ={"mentionmethod": mentionmethod, "max_t":max_t, "svc_nrows": svc_nrows, "svc_cv": svc_cv, "ltr_nrows":ltr_nrows, "dsname": dsname,
-                      "max_t": max_t, "mention_overall":mention_overall, "wikify_overall": wikify_overall, "elapsed": elapsed}
-        
-        
-        logres(detailedresname, '%s',  json.dumps(detailedres))
-        #print mention_overall
-        
-        mention_overall_measures = get_overall_measures(mention_overall)    
-        output = ('mention_evaluation',mentionmethod, max_t, svc_nrows, svc_cv, ltr_nrows, dsname) + mention_overall_measures + (elapsed,)        
-        logres(resname, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n', *output)
-        
-        #print wikify_overall
-        wikify_overall_measures = get_overall_measures(wikify_overall)  
-        output = ('wikify_evaluation',mentionmethod, max_t,  svc_nrows, svc_cv, ltr_nrows, dsname) + wikify_overall_measures + (elapsed,)
-        logres(resname, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n', *output)
+                print "dsname: %s, mentionmethods: %s, max_t: %s ..."  % (dsname,
+                        mentionmethods, max_t)
+                sys.stdout.flush()
+
+                tmpfilename = os.path.join(tmpdir, 
+                                           '-'.join([str(mentionmethod), str(max_t), str(svc_nrows), str(svc_cv), str(ltr_nrows) ,os.path.basename(dsname)]))
+                mention_overall=[]
+                wikify_overall=[]
+                start_count=-1
+                if os.path.isfile(tmpfilename) and not fresh_restart:
+                    with open(tmpfilename,'r') as tmpf:
+                        for line in tmpf:
+                            js = json.loads(line.strip())
+                            start_count = js['no']
+
+                            if js['mention_measures'] is not None:
+                                mention_overall.append(js['mention_measures'])
+
+                            if js['wikify_measures'] is not None:
+                                wikify_overall.append(js['wikify_measures'])
+                if start_count !=-1:
+                    print "Continuing from\t", start_count
+
+                count=0
+                with open(dsname,'r') as ds, open(tmpfilename,'a') as tmpf:
+                    for line in ds:
+                        if (max_count !=-1) and (count >= max_count):
+                            break
+
+                        js = json.loads(line.decode('utf-8').strip());
+                        S = js["text"]
+                        M = js["mentions"]
+                        count +=1
+                        if count <= start_count:
+                            continue
+                        if verbose:
+                            print "%s:\tS=%s\n\tM=%s" % (count, json.dumps(S, ensure_ascii=False).encode('utf-8'),json.dumps(M, ensure_ascii=False).encode('utf-8'))
+                            sys.stdout.flush()
+                        text= " ".join(S)    
+                        #S2,M2 = detect_mentions(text, mentionmethod=mentionmethod)      
+                        S2,M2 = wikify_string(text, mentionmethod=mentionmethod)
+
+                        mention_measures = get_sentence_measures(S2, M2, S, M, wsd_measure=False)
+                        mention_overall.append(mention_measures)
+
+                        wikify_measures = get_sentence_measures(S2, M2, S, M, wsd_measure=True)
+                        wikify_overall.append(wikify_measures)
+
+                        tmpf.write(json.dumps({"no":count, "mention_measures":mention_measures, "wikify_measures":wikify_measures})+"\n")
+
+
+
+                elapsed = str(timeformat(int(time.time()-start)));
+                print "done"
+                detailedres ={"mentionmethod": mentionmethod, "max_t":max_t, "svc_nrows": svc_nrows, "svc_cv": svc_cv, "ltr_nrows":ltr_nrows, "dsname": dsname,
+                              "max_t": max_t, "mention_overall":mention_overall, "wikify_overall": wikify_overall, "elapsed": elapsed}
+
+
+                logres(detailedresname, '%s',  json.dumps(detailedres))
+                #print mention_overall
+
+                mention_overall_measures = get_overall_measures(mention_overall)    
+                output = ('mention_evaluation',mentionmethod, max_t, svc_nrows, svc_cv, ltr_nrows, dsname) + mention_overall_measures + (elapsed,)        
+                logres(resname, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n', *output)
+
+                #print wikify_overall
+                wikify_overall_measures = get_overall_measures(wikify_overall)  
+                output = ('wikify_evaluation',mentionmethod, max_t,  svc_nrows, svc_cv, ltr_nrows, dsname) + wikify_overall_measures + (elapsed,)
+                logres(resname, '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n', *output)
             
 
 print "done"

@@ -11,7 +11,7 @@ from wikipedia import *
 
 
 home = os.path.expanduser("~");
-dsdir = os.path.join(home ,"backup/projects/wikisim/datasets/similarity");
+dsdir = os.path.join("../datasets/similarity");
 #dsdir = os.path.join(home ,"backup/projects/wikisim/datasets/similarity.orig");
 workingdir = os.path.join(home , 'backup/tmp/');
 baseresdir = path = os.path.join(workingdir, 'results')
@@ -33,7 +33,7 @@ def tmpdir(direction, hitsver):
 def graphdir(direction):    
     return os.path.join(getworkingdir , 'graphs' , wikisim.graphtypestr(direction));
 
-def initdirs(direction, hitsver):
+def initdirs(hitsver, direction):
     path = resdir(hitsver, direction)
     if not os.path.exists(path):
         os.makedirs(path)

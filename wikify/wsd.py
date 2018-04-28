@@ -34,6 +34,7 @@ def load_wsd_model(nrows):
     wsd_model_preprocessor_fn = os.path.join(home, MODELDIR, 'ltr_preprocessor.%s.pkl' %(nrows, ))
     if os.path.isfile(wsd_model_preprocessor_fn): 
         wsd_model_preprocessor_ = joblib.load(open(wsd_model_preprocessor_fn, 'rb'))    
+        print "wsd_model_preprocessor file (%s) loaded" % (wsd_model_preprocessor_fn,)
     else:
         print "wsd_model_preprocessor file (%s) not found" % (wsd_model_preprocessor_fn,)
 
@@ -41,6 +42,7 @@ def load_wsd_model(nrows):
     wsd_model_fn_ = os.path.join(home, MODELDIR, 'ltr.%s.pkl'%(nrows,))
     if os.path.isfile(wsd_model_fn_): 
         wsd_model_ = joblib.load(open(wsd_model_fn_, 'rb'))    
+        print "wsd_model file (%s) loaded" % (wsd_model_fn_,)
     else:
         print "wsd_model file (%s) not found" % (wsd_model_fn_,)
 

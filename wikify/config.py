@@ -9,4 +9,4 @@ import datetime
 
 
 home = os.path.expanduser("~");
-dsdir_ner = os.path.join(home ,"backup/datasets/ner");
+dsdir_ner = "../datasets/ner";

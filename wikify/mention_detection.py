@@ -28,7 +28,7 @@ def load_mention_model(nrows, svc):
     global mention_model_preprocessor_, mention_model_
     mention_model_preprocessor_fn = os.path.join(home, MODELDIR, 'svc_preprocessor.%s.pkl' % (nrows,))
     if os.path.isfile(mention_model_preprocessor_fn): 
-        print "mention_model_preprocessor loaded"
+        print "mention_model_preprocessor file (%s) loaded" % (mention_model_preprocessor_fn,)
         mention_model_preprocessor_ = joblib.load(open(mention_model_preprocessor_fn, 'rb'))
     else:
         print "mention_model_preprocessor file (%s) not found" % (mention_model_preprocessor_fn,)
@@ -37,9 +37,9 @@ def load_mention_model(nrows, svc):
     mention_model_fn = os.path.join(home, MODELDIR, 'svc_mentions_unbalanced.%s.%s.pkl' % (nrows,svc))
     if os.path.isfile(mention_model_fn): 
         mention_model_ = joblib.load(open(mention_model_fn, 'rb'))    
-        print "mention_model_ loaded"
+        print "mention_model_ file (%s) loaded" % (mention_model_fn,)
     else:
-        print "mention_model_ file (%s) not found" % (mention_model_fn_,)
+        print "mention_model_ file (%s) not found" % (mention_model_fn,)
         
 
 def tokenize_stanford(text):

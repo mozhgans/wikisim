@@ -1,20 +1,22 @@
 """Testing batch embedding for a given file. """
 
-from scipy import stats
 import os
+from scipy import stats
 import time;
 from config import *
 
+%load_ext autoreload
+%autoreload
 
-#%aimport calcsim
+%aimport calcsim
 from calcsim import *
 
 
 
-direction=DIR_IN;
-initdirs(direction, 'rvspagerank')
-
-dsfiles=('MC_28-edited.csv', 'MiniMayoSRS-edited.csv','MayoSRS-edited.csv')
+direction=DIR_OUT;
+initdirs('rvspagerank', direction)
+print "starte"
+dsfiles=('MiniMayoSRS-edited.csv','MayoSRS-edited.csv')
 start = time.time()
 for dsname in dsfiles:
     printflush ("Processing",dsname)
