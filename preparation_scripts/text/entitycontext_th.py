@@ -1,4 +1,8 @@
 
+''' Generate a json file (contexts.json) where eahc line is an anchor text 
+    with its left and right context
+'''
+
 import os
 import requests
 import json
@@ -108,10 +112,10 @@ def worker(fname, q):
     
 manager= Manager()
 
-titles_name = os.path.join(home,'backup/datasets/cmod/titles.txt')
+titles_name = os.path.join(home,'backup/wikipedia/20160305/cmod/titles.txt')
 title_q = manager.Queue()
 
-cont_name = os.path.join(home,'backup/datasets/cmod/contexts.json')
+cont_name = os.path.join(home,'backup/wikipedia/20160305/cmod/contexts.json')
 cont_q = manager.Queue()
 
 

@@ -1,3 +1,13 @@
+'''Converts the output of WikiExtractor.py to a text file with each line a json object
+    Each object has the following fields:
+    id: Wikipedia id
+    title: The title
+    opening_text: The first paragraph of the page
+    opening_annotation: The annotation of the oppenint text which is itself another json objec
+    text: The text
+    annotation": The annotation of the text, which is itself another json object 
+
+'''
 import re
 import json
 import sys
@@ -6,6 +16,16 @@ import sys
 from HTMLParser import HTMLParser
 sys.path.insert(0,'..')
 from wikisim.wikipedia import *
+
+__author__ = "Armin Sajadi"
+__copyright__ = "Copyright 215, The Wikisim Project"
+__credits__ = ["Armin Sajadi"]
+__license__ = "GPL"
+__version__ = "1.0.1"
+__maintainer__ = "Armin Sajadi"
+__email__ = "sajadi@cs.dal.ca"
+__status__ = "Development"
+
 
 fileinput = sys.stdin
 

@@ -124,6 +124,8 @@ def title2id(title):
     Returns: 
         The title of the page
     """        
+    if title is None:
+        return None
     wid=None;
     title = normalize_str(title)
     _cursor.execute("""SELECT * FROM `page` where page_title=%s and page_namespace=0""", (title,))

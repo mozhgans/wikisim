@@ -4,5 +4,8 @@
 *.me
 *~
 *.pkl
+*.log
 wikification
+scrap.*
+draft.*
 

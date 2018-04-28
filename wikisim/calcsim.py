@@ -15,7 +15,7 @@ from config import *
 
 __author__ = "Armin Sajadi"
 __copyright__ = "Copyright 215, The Wikisim Project"
-__credits__ = ["Armin Sajadi", "Evangelo Milios", "Armin Sajadi"]
+__credits__ = ["Armin Sajadi"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Armin Sajadi"

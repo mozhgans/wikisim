@@ -1,5 +1,5 @@
-#!/users/grad/sajadi/backup/anaconda2/envs/wikisim/bin/python
-#/home/sajadi/anaconda2/bin/python
+#!/home/sajadi/anaconda2/bin/python
+#/users/grad/sajadi/backup/anaconda2/bin/python
 
 import sys
 import cgi, os
@@ -13,9 +13,9 @@ import json
 
 
 sys.path.insert(0,'..')
-from wikisim.calcsim import *
+from wikify.wikify import *
 
-log('cgi-batchsim started');
+log('cgi-batchwikify started');
 print "Content-type:application/json\r\n\r\n"
 
 tmpdir = os.path.join(outdir, 'tmp')
@@ -38,6 +38,7 @@ form = cgi.FieldStorage()
 fileitem = form['file']
 import time
 jobid = time.strftime("%Y%m%d-%H%M%S")
+
 
 #Test if the file was uploaded
 if fileitem.filename:
@@ -83,23 +84,9 @@ with open(resultfile,'w') as f:
 
 
 
-task=form.getvalue('task')
+mentionmethod =int(form.getvalue('mentionmethod'))
 
-direction =int(form.getvalue('dir'))
-log('cutoff%s', 'cutoff');
-
-cutoff=form.getvalue('cutoff')
-cutoff = None if cutoff.lower()=="all" else int(cutoff)
-
-log('cutoff%s', cutoff);
-
-
-if task == 'sim':
-    getsim_file(infn, outfn, 'rvspagerank', direction);
-elif task == 'emb':
-    getembed_file(infn, outfn, direction, get_titles=True, cutoff=cutoff);
-
-
+wikify_from_file_api(infn, outfn, mentionmethod)
 
 # Update result file
 

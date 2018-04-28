@@ -1,5 +1,5 @@
-#!/home/sajadi/anaconda2/bin/python
-#/users/grad/sajadi/backup/anaconda2/bin/python
+#!/users/grad/sajadi/backup/anaconda2/envs/wikisim/bin/python
+#/home/sajadi/anaconda2/bin/python
 
 import json
 import cgi, cgitb 
@@ -8,7 +8,6 @@ import sys
 
 sys.path.insert(0,'..')
 from wikisim.calcsim import *
-
 log('cgi-pairsim started');
 
 # Import modules for CGI handling 

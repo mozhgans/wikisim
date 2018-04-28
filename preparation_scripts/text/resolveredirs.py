@@ -1,3 +1,7 @@
+'''Incase an anchor is pointing to a redirect page, it replaces the target to the final destination
+'''
+
+
 import sys
 sys.path.append('../../cgi-bin/')
 from collections import defaultdict
@@ -5,9 +9,19 @@ import imp
 import json
 import urllib
 from wikipedia import *
+import StringIO
+
+__author__ = "Armin Sajadi"
+__copyright__ = "Copyright 215, The Wikisim Project"
+__credits__ = ["Armin Sajadi"]
+__license__ = "GPL"
+__version__ = "1.0.1"
+__maintainer__ = "Armin Sajadi"
+__email__ = "sajadi@cs.dal.ca"
+__status__ = "Development"
+
 fileinput = sys.stdin
 errout = sys.stderr
-import StringIO
 #fileinput = StringIO.StringIO(inputstr)
 pairdict = defaultdict(int)
 while True:

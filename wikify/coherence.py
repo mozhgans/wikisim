@@ -6,6 +6,16 @@ from __future__ import division
 from wsd_util import *
 import numpy as np
 
+__author__ = "Armin Sajadi"
+__copyright__ = "Copyright 215, The Wikisim Project"
+__credits__ = ["Armin Sajadi"]
+__license__ = "GPL"
+__version__ = "1.0.1"
+__maintainer__ = "Armin Sajadi"
+__email__ = "sajadi@cs.dal.ca"
+__status__ = "Development"
+
+
 def get_candidate_representations(candslist, direction, method):
     '''returns an array of vector representations. 
        Inputs: 

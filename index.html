@@ -92,7 +92,85 @@
                 <strong>Graph Embedding</strong>". You can play with the demo, or directly request to the
                 <a href="#doc">web service</a>. </p>
         </div>
+        <div class="container" id="eldiv">
+                <div id="elsidediv">
+                    <div class="panel-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <label>Wikification</label>
+                            </div>
+    
+                            <div class="panel-body">
+                                <form role="form" enctype="multipart/form-data">
+                                    <div class="form-group">
+                                        <label>Mention Detector:</label>
+                                        <div class="radio">
+                                            <label>
+                                                <input type="radio" name="mentiondetection" value="0" checked="checked">Learned</label>
+                                            <label>
+                                                <input type="radio" name="mentiondetection" value="1">CoreNLP</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="wikitext">Input Text:</label>
+                                        <textarea id="wikitext" class="form-control">I like programming with Python </textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="btn-group btn-group-lg">
+                                            <button type="button" id="elbutton" class="btn btn-primary">Wikify</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="progress collapse" id="elprogdiv">
+                                            <progress></progress>
+                                        </div>
+                                    </div>
+    
+                                </form>
+                                <div class="alert alert-success " role="alert" id='alerteldiv'>
+                                        <label for="alerteldiv">
+                                            <font color="blue">Wikified Text:</font>
+                                        </label>
+                                        <label id="el"></label>
+                                    </div>
+                                        
+    
+                                <form role="form" enctype="multipart/form-data">
+                                    <label> Batch </label>
+    
+                                    <div class="form-group">
+                                        <input type="file" class="form-control" name="elfile" id="elfileinput">
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="btn-group btn-group-lg">
+                                            <button type="button" id="batchelbutton" class="btn btn-primary">Calculate</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="alert alert-success " role="alert" id='batcheldiv'>
+                                            <label for="batcheldiv"></label>
+                                            <p>Check the
+                                                <a href='out/results.html'>results page</a> for the results</p>
+                                        </div>
+                                        <div class="progress collapse" id="batchelprogdiv">
+                                            <progress></progress>
+                                        </div>
+    
+                                    </div>
+    
+                                </form>
+    
+                            </div>
+                        </div>
+    
+                    </div>
+                </div>
+                <div id="fakechartviz">
+                </div>
+            
+            </div>        
         <div class="container" id="simdiv">
+
             <div id="simsidediv">
                 <div class="panel-group">
                     <div class="panel panel-default">
@@ -151,17 +229,11 @@
                                 </div>
 
                             </form>
-                            <div class="alert alert-success " role="alert" id='simdiv'>
-                                <label for="simdiv">
+                            <div class="alert alert-success " role="alert" id='alertsimdiv'>
+                                <label for="alertsimdiv">
                                     <font color="blue">Similarity:</font>
                                 </label>
                                 <label id="sim"></label>
-                            </div>
-                            <div class="alert alert-danger " role="alert" id='errsimdiv' hidden=true>
-                                <label for="errsimdiv">
-                                    <font color="red">Error:</font>
-                                </label>
-                                <label id="errsim">test</label>
                             </div>
 
                             <form role="form" enctype="multipart/form-data">
@@ -253,17 +325,11 @@
                                 </div>
 
                             </form>
-                            <div class="alert alert-success " role="alert" id='embdiv'>
-                                <label for="embdiv">
+                            <div class="alert alert-success " role="alert" id='alertembdiv'>
+                                <label for="alertembdiv">
                                     <font color="blue">Embedding:</font>
                                 </label>
                                 <label id="emb"></label>
-                            </div>
-                            <div class="alert alert-danger " role="alert" id='errembdiv' hidden=true>
-                                <label for="errembdiv">
-                                    <font color="red">Error:</font>
-                                </label>
-                                <label id="erremb">test</label>
                             </div>
 
                             <form role="form" enctype="multipart/form-data">
@@ -498,87 +564,65 @@
 
     <script>
         $(document).ready(function () {
-            $("#simbutton").click(function () {
-
-                $("#sim").text('');
-                $("#simchart2").remove();
-                $("#simchart1").remove();
-
-                if ($("#simc1").val() && $("#simc2").val()) {
-                    postpairs();
+            //Wikification
+            $("#elbutton").click(function () {
+                
+                if ($("#wikitext").val()) {
+                    postwikitext();
                 }
 
             });
 
-            $("#batchsimbutton").click(function () {
-                if ($("#simfileinput").val()) {
-                    simuploadfile();
+            $("#batchelbutton").click(function () {
+                $('#alerteldiv').removeClass('alert-danger').addClass('alert-success');
+                if ($("#elfileinput").val()) {
+                    eluploadfile();
                 }
 
             });
 
-            function postpairs() {
-                $('#simbutton').attr('disabled', true);
-                //$('#simdiv').hide();
-                $('#errsimdiv').hide();
-                $('#simprogdiv').show();
+            function postwikitext() {
+                $('#alerteldiv').removeClass('alert-danger').addClass('alert-success');
+                $("#el").text('');
 
-                var task = 'sim'
-                var viz = $('#simviz').is(':checked');
-                $.post("cgi-bin/cgi-pairsim.py",
+
+                $('#elbutton').attr('disabled', true);
+                $('#elprogdiv').show();
+                $.post("cgi-bin/cgi-wikify.py",
                     {
-                        task: task,
-                        dir: $('input[name=simdirection]:checked').val(),
-                        cutoff: $("#simcutoff").val(),
-                        viz: viz,
-                        c1: $("#simc1").val(),
-                        c2: $("#simc2").val()
+                        mentionmethod: $('input[name=mentiondetection]:checked').val(),
+                        wikitext: $("#wikitext").val(),
                     },
                     function (data, status) {
-                        $('#simbutton').attr('disabled', false);
-                        $('#simprogdiv').hide();
+                        $('#elbutton').attr('disabled', false);
+                        $('#elprogdiv').hide();
                         if ('err' in data) {
-                            $('#errsimdiv').show();
-                            $('#errsim').text(data['err']);
+                            $('#alerteldiv').removeClass('alert-success').addClass('alert-danger');
+                            $('#el').text(data['err']);
                             return
-
                         }
-                        $("#sim").text(data["rel"]);
-                        if ('em1' in data) {
-                            $('#simchartviz').append("<div id='simchart1'></div>");
-                            simpledraw(createWords(data['em1']), '#simchart1');
-                        }
-                        if ('em2' in data) {
-                            $('#simchartviz').append("<div id='simchart2'></div>");
-                            simpledraw(createWords(data['em2']), '#simchart2');
-                        }
+                        $("#el").html(data["outtext"]);
                     }
                 ).fail(function (xhr, textStatus, errorThrown) {
-                    $('#simdiv').html(xhr.responseText);
-                    //$('#simdiv').show()
+                    $('#alerteldiv').removeClass('alert-success').addClass('alert-danger');
+                    $('#el').html(xhr.responseText);
                 });
             }
 
-            function simuploadfile() {
-
-                $('#batchsimbutton').attr('disabled', true);
-                //$('#batchsimdiv').hide();
-                $('#batchsimprogdiv').show();
-
-                var task = 'sim'
-                var dir = $('input[name=simdirection]:checked').val();
+            function eluploadfile() {
+                $('#batcheldiv').removeClass('alert-danger').addClass('alert-success');
+                $("label[for='batcheldiv']").text("")
+                $('#batchelbutton').attr('disabled', true);
+                $('#batchelprogdiv').show();
 
                 var formData = new FormData();
                 var jobid = Date.now()
-                formData.append("file", $("#simfileinput")[0].files[0]);
-                formData.append("dir", dir);
-                formData.append("task", task);
-                formData.append("cutoff", $("#simcutoff").val(),
-);
-                formData.append("jobid", jobid)
+                formData.append("file", $("#emfileinput")[0].files[0]);
+                formData.append("mentionmethod", $('input[name=mentiondetection]:checked').val());
+                formData.append("jobid", jobid);
 
                 $.ajax({
-                    url: 'cgi-bin/cgi-batchsim.py',  //Server script to process data
+                    url: 'cgi-bin/cgi-batwikify.py',  //Server script to process data
                     type: 'POST',
                     xhr: function () {  // Custom XMLHttpRequest
                         var myXhr = $.ajaxSettings.xhr();
@@ -601,20 +645,117 @@
 
                     },
                     error: function (xhr, textStatus, errorThrown) {
+                        $('#alerteldiv').removeClass('alert-success').addClass('alert-danger');
+                        $("label[for='batcheldiv']").html(xhr.responseText)
+                    }
+                });
+                $('#batchelbutton').attr('disabled', false);
+                $("label[for='batcheldiv']").text("Job submitted, jobid: " + jobid + "")
+                $('#batchelprogdiv').hide();
+            }
+
+            //Semantic Relatedness
+            $("#simbutton").click(function () {
+                if ($("#simc1").val() && $("#simc2").val()) {
+                    postpairs();
+                }
+
+            });
+
+            $("#batchsimbutton").click(function () {
+                if ($("#simfileinput").val()) {
+                    simuploadfile();
+                }
+
+            });
+
+            function postpairs() {
+                $('#alertsimdiv').removeClass('alert-danger').addClass('alert-success');
+                $("#sim").text('');
+                $("#simchart2").remove();
+                $("#simchart1").remove();
+                $('#simbutton').attr('disabled', true);
+                $('#simprogdiv').show();
+                $.post("cgi-bin/cgi-pairsim.py",
+                    {
+                        task: 'sim',
+                        dir: $('input[name=simdirection]:checked').val(),
+                        cutoff: $("#simcutoff").val(),
+                        viz: $('#simviz').is(':checked'),
+                        c1: $("#simc1").val(),
+                        c2: $("#simc2").val()
+                    },
+                    function (data, status) {
+                        $('#simbutton').attr('disabled', false);
+                        $('#simprogdiv').hide();
+                        if ('err' in data) {
+                            $('#alertsimdiv').removeClass('alert-success').addClass('alert-danger');
+                            $('#sim').text(data['err']);
+                            return
+
+                        }
+                        $("#sim").text(data["rel"]);
+                        if ('em1' in data) {
+                            $('#simchartviz').append("<div id='simchart1'></div>");
+                            simpledraw(createWords(data['em1']), '#simchart1');
+                        }
+                        if ('em2' in data) {
+                            $('#simchartviz').append("<div id='simchart2'></div>");
+                            simpledraw(createWords(data['em2']), '#simchart2');
+                        }
+                    }
+                ).fail(function (xhr, textStatus, errorThrown) {
+                    $('#alertsimdiv').removeClass('alert-success').addClass('alert-danger');
+                    $('#sim').html(xhr.responseText);
+                });
+            }
+
+            function simuploadfile() {
+
+                $('#batchsimdiv').removeClass('alert-danger').addClass('alert-success');
+                $("label[for='batchsimdiv']").text("")
+                $('#batchsimbutton').attr('disabled', true);
+                $('#batchsimprogdiv').show();
+
+                var formData = new FormData();
+                var jobid = Date.now()
+                formData.append("file", $("#simfileinput")[0].files[0]);
+                formData.append("dir", $('input[name=simdirection]:checked').val());
+                formData.append("task", 'sim');
+                formData.append("cutoff", $("#simcutoff").val());
+                formData.append("jobid", jobid);
+
+                $.ajax({
+                    url: 'cgi-bin/cgi-batchsim.py',  //Server script to process data
+                    type: 'POST',
+                    xhr: function () {  // Custom XMLHttpRequest
+                        var myXhr = $.ajaxSettings.xhr();
+                        if (myXhr.upload) { // Check if upload property exists
+                            myXhr.upload.addEventListener('progress', progressHandlingFunction, false); // For handling the progress of the upload
+                        }
+                        return myXhr;
+                    },
+                    //Ajax events
+                    // Form data
+                    data: formData,
+                    //Options to tell jQuery not to process data or worry about content-type.
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (data, textstatus) {
+
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        $('#batchsimdiv').removeClass('alert-success').addClass('alert-danger');
                         $("label[for='batchsimdiv']").html(xhr.responseText)
-                        //$('#batchsimdiv').show()
                     }
                 });
                 $('#batchsimbutton').attr('disabled', false);
                 $("label[for='batchsimdiv']").text("Job submitted, jobid: " + jobid + "")
-                //$('#batchsimdiv').show();
                 $('#batchsimprogdiv').hide();
             }
             // Embedding
             $("#embbutton").click(function () {
-
-                $("#emb").text('');
-                $("#embchart").remove();
 
                 if ($("#embc1").val()) {
                     postsingle();
@@ -630,34 +771,33 @@
             });
 
             function postsingle() {
+                $('#alertembdiv').removeClass('alert-danger').addClass('alert-success');
+                $("#emb").text('');
+                $("#embchart").remove();
                 $('#embbutton').attr('disabled', true);
-                //$('#simdiv').hide();
-                $('#errembdiv').hide();
                 $('#embprogdiv').show();
 
-                var viz = $('#embviz').is(':checked');
                 $.post("cgi-bin/cgi-pairsim.py",
                     {
-                        task: "emb",
+                        task: 'emb',
                         dir: $('input[name=embdirection]:checked').val(),
                         cutoff: $("#embcutoff").val(),
-                        viz: viz,
+                        viz: $('#embviz').is(':checked'),
                         c1: $("#embc1").val(),
                     },
                     function (data, status) {
                         $('#embbutton').attr('disabled', false);
                         $('#embprogdiv').hide();
                         if ('err' in data) {
-                            $('#errembdiv').show();
-                            $('#erremb').text(data['err']);
+                            $('#alertembdiv').removeClass('alert-success').addClass('alert-danger');
+                            $('#emb').text(data['err']);
                             return
 
                         }
-                        //$('#simdiv').show();
                         words = createWords(data['em']);
                         wordsText = sortWords(words);
                         $('#emb').text(wordsText);
-                        if (viz) {
+                        if ($('#embviz').is(':checked')) {
                             $('#embchartviz').append("<div id='embchart'></div>");
                             simpledraw(words, '#embchart');
                         }
@@ -665,25 +805,23 @@
 
                     }
                 ).fail(function (xhr, textStatus, errorThrown) {
-                    //$('#embdiv').text("error: " + xhr.responseText + "\n" + textStatus);
-                    $('#embdiv').html(xhr.responseText );
-                    //$('#simdiv').show()
+                    $('#alertembdiv').removeClass('alert-success').addClass('alert-danger');
+                    $('#emb').html(xhr.responseText);
                 });
             }
             function embuploadfile() {
 
+                $('#batchembdiv').removeClass('alert-danger').addClass('alert-success');
+                $("label[for='batchembdiv']").text("")
                 $('#batchembbutton').attr('disabled', true);
-                //$('#batchsimdiv').hide();
                 $('#batchembprogdiv').show();
 
-                var task = 'emb'
-                var dir = $('input[name=embdirection]:checked').val();
 
                 var formData = new FormData();
                 var jobid = Date.now()
                 formData.append("file", $("#embfileinput")[0].files[0]);
-                formData.append("dir", dir);
-                formData.append("task", task);
+                formData.append("dir", $('input[name=embdirection]:checked').val());
+                formData.append("task", 'emb');
                 formData.append("cutoff", $("#embcutoff").val());
                 formData.append("jobid", jobid)
 
@@ -712,12 +850,12 @@
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         //$("label[for='batchembdiv']").text("error: " + xhr.responseText + "\n" + textStatus)
+                        $('#batchembdiv').removeClass('alert-success').addClass('alert-danger');
                         $("label[for='batchembdiv']").html(xhr.responseText)
                     }
                 });
                 $('#batchembbutton').attr('disabled', false);
                 $("label[for='batchembdiv']").text("Job submitted, jobid: " + jobid + "")
-                //$('#batchsimdiv').show();
                 $('#batchembprogdiv').hide();
             }
 

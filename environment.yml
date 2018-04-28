@@ -1,8 +1,13 @@
 name: wikisim
 channels:
 - conda-forge
+- anaconda
 - defaults
 dependencies:
+- beautifulsoup4=4.6.0=py27h3f86ba9_1
+- libxml2=2.9.7=h26e45fe_0
+- libxslt=1.1.32=h1312cb7_0
+- lxml=4.1.1=py27hf71bdeb_1
 - pulp=1.6.8=py27_0
 - pyparsing=2.2.0=py27_0
 - asn1crypto=0.22.0=py27h94ebe91_1
@@ -53,24 +58,25 @@ dependencies:
 - libedit=3.1=heed3624_0
 - libffi=3.2.1=hd88cf55_4
 - libgcc-ng=7.2.0=h7cc24e2_2
+- libgfortran=3.0.0=1
 - libgfortran-ng=7.2.0=h9f7466a_2
 - libpng=1.6.32=hda9c8bc_2
 - libsodium=1.0.13=h31c71d8_2
 - libssh2=1.8.0=h8c220ad_2
 - libstdcxx-ng=7.2.0=h7a57d05_2
 - libxcb=1.12=h84ff03f_3
-- libxml2=2.9.4=h6b072ca_5
 - markupsafe=1.0=py27h97b2822_1
 - matplotlib=2.1.0=py27h09aba24_0
 - mistune=0.8.1=py27h1bd0165_0
-- mkl=2018.0.0=hb491cac_4
+- mkl=2017.0.4=h4c4d0af_0
 - mysql-python=1.2.5=py27_0
 - nbconvert=5.3.1=py27he041f76_0
 - nbformat=4.4.0=py27hed7f2b2_0
 - ncurses=6.0=h06874d7_1
 - networkx=2.0=py27hfc23926_0
+- nltk=3.2.5=py27hec5f4de_0
 - notebook=5.2.1=py27h4055434_0
-- numpy=1.13.3=py27hbcc08e0_0
+- numpy=1.13.3=py27h3dfced4_2
 - openssl=1.0.2m=h8cfc7e7_0
 - pandas=0.21.0=py27he307072_1
 - pandoc=1.19.2.1=hea2e7c5_1
@@ -96,7 +102,8 @@ dependencies:
 - readline=7.0=hb321a52_4
 - requests=2.18.4=py27hc5b0589_1
 - scandir=1.6=py27hf7388dc_0
-- scipy=1.0.0=py27hf5f0f52_0
+- scikit-learn=0.18.1=np113py27_1
+- scipy=0.19.1=np113py27_0
 - setuptools=36.5.0=py27h68b189e_0
 - simplegeneric=0.8.1=py27h19e43cd_0
 - singledispatch=3.4.0.3=py27h9bcb476_0
@@ -129,6 +136,9 @@ dependencies:
   - jupyter-console==5.2.0
   - jupyter-core==4.3.0
   - prompt-toolkit==1.0.15
+  - pyltr==0.2.4
+  - sklearn-pandas==1.6.0
   - smart-open==1.5.3
+  - unidecode==1.0.22
 prefix: /users/grad/sajadi/backup/anaconda2/envs/wikisim
 
