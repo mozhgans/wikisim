@@ -35,15 +35,11 @@ fresh_restart=False
 
 
 
-dsnames = [os.path.join(home, dsdir_ner, 'kore.json'),
-          os.path.join(home,  dsdir_ner, 'wiki-mentions.5000.json'),
-#          os.path.join(home,  dsdir_ner, 'aida.json'),  
-          os.path.join(home,  dsdir_ner, 'msnbc.json'),
-          os.path.join(home,  dsdir_ner, 'aquaint.json') 
-          ]
-dsnames = [ 
-          os.path.join(home,  dsdir_ner, 'MSNBC.txt.json'),
-          os.path.join(home,  dsdir_ner, 'AQUAINT.txt.json') 
+dsnames = [os.path.join(dsdir_ner, 'kore.json'),
+          os.path.join(dsdir_ner, 'wiki-mentions.5000.json'),
+#          os.path.join(dsdir_ner, 'aida.json'),  
+          os.path.join(dsdir_ner, 'msnbc.txt.json'),
+          os.path.join(dsdir_ner, 'aquaint.txt.json') 
           ]
 
 methods = ['popularity','keydisamb','entitycontext','mention2entity','context2context','context2profile', 'learned']

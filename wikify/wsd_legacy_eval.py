@@ -13,6 +13,7 @@ from optparse import OptionParser
 from wsd import *
 import time
 from random import shuffle
+from config import *
 np.seterr(all='raise')
 
 
@@ -39,13 +40,12 @@ fresh_restart=False
 
 
 
-dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),
-          os.path.join(home,'backup/datasets/ner/wiki-mentions.5000.json'),
-          os.path.join(home,'backup/datasets/ner/aida.json'),  
-          os.path.join(home,'backup/datasets/ner/msnbc.json'),
-          os.path.join(home,'backup/datasets/ner/aquaint.json') 
+dsnames = [os.path.join(dsdir_ner, 'kore.json'),
+          os.path.join(dsdir_ner, 'wiki-mentions.5000.json'),
+          os.path.join(dsdir_ner, 'aida.json'),  
+          os.path.join(dsdir_ner, 'msnbc.txt.json'),
+          os.path.join(dsdir_ner, 'aquaint.txt.json') 
           ]
-dsnames = [os.path.join(home,'backup/datasets/ner/kore.json'),]
 
 methods = ['popularity','keydisamb','entitycontext','mention2entity','context2context','context2profile', 'learned']
 methods = ['popularity','mention2entity','context2context','context2profile', 'learned']

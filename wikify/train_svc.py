@@ -48,7 +48,7 @@ def downsample_negatives(X_train, y_train, frac=0.2):
 
 home = '/users/grad/sajadi'
 
-tr_file_name = os.path.join(home,'backup/datasets/ner/mentiontrainrepository.5000.30000.tsv')
+tr_file_name = os.path.join('../datasets/ner/mentiontrainrepository.5000.30000.tsv')
 pos_col=['8']
 nrows=50000
 data=pd.read_table(tr_file_name, header=None, nrows=nrows)
@@ -75,7 +75,7 @@ feature_def += ((pos_col, [LabelBinarizer()]),)
 
 svc_preprocessor = DataFrameMapper(feature_def)
 X_train = svc_preprocessor.fit_transform(X_train)
-svc_preprocessor_fn = os.path.join(home,'backup/datasets/ner/tmp/svc_preprocessor.%s.pkl' % (nrows,))
+svc_preprocessor_fn = os.path.join('../model/tmp/svc_preprocessor.%s.pkl' % (nrows,))
 joblib.dump(svc_preprocessor, open(svc_preprocessor_fn, 'wb'))
 X_test = svc_preprocessor.transform(X_test)
 #####
@@ -89,7 +89,7 @@ for cv in [1,10,20]:
     clf.fit(X_train, y_train)  
     y_pred = clf.predict(X_test)
     measures = metrics.precision_recall_fscore_support(y_test, y_pred, average='binary')
-    model_file_name = os.path.join(home,'backup/datasets/ner/tmp/svc_mentions_unbalanced.%s.%s.pkl' % (nrows,cv))
+    model_file_name = os.path.join('../model/tmp/svc_mentions_unbalanced.%s.%s.pkl' % (nrows,cv))
     joblib.dump(clf, open(model_file_name, 'wb'))
     print "measures: ", measures
     sys.stdout.flush()

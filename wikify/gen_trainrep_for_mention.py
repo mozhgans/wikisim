@@ -19,12 +19,12 @@ max_count=5000
 skip_lines=0
 
 outdir = os.path.join(baseresdir, 'wsd')
-outfile = os.path.join(home,'backup/datasets/ner/mentiontrainrepository.%s.30000.tsv'%(max_count,))
+outfile = os.path.join('../datasets/ner/mentiontrainrepository.%s.30000.tsv'%(max_count,))
 if os.path.isfile(outfile): 
     sys.stderr.write(outfile + " already exist!\n")
     sys.exit()
 
-dsname = os.path.join(home,'backup/datasets/ner/wiki-mentions.30000.json')
+dsname = os.path.join('../datasets/ner/wiki-mentions.30000.json')
 
 count = 0  
 mention_id = 0

@@ -21,12 +21,12 @@ max_count=5000
 #np.seterr(all='raise')
 
 outdir = os.path.join(baseresdir, 'wsd')
-outfile = os.path.join(home,'backup/datasets/ner/trainrepository.%s.30000.tsv'%(max_count,))
+outfile = os.path.join('../datasets/ner/trainrepository.%s.30000.tsv'%(max_count,))
 if os.path.isfile(outfile): 
     sys.stderr.write(outfile + " already exist!\n")
     #sys.exit()
 
-dsname = os.path.join(home,'backup/datasets/ner/wiki-mentions.30000.json')
+dsname = os.path.join('../datasets/ner/wiki-mentions.30000.json')
 
 count = 0          
 with open(dsname,'r') as ds, open(outfile,'w') as outf:

@@ -20,7 +20,7 @@ __status__ = "Development"
 
 #Columns = [entity_id, qid, score0, score1, score5, label]
 outdir = os.path.join(baseresdir, 'wikify')
-tr_file_name = os.path.join(home,'backup/datasets/ner/trainrepository.5000.30000.tsv')
+tr_file_name = os.path.join('../datasets/ner/trainrepository.5000.30000.tsv')
 nrows=50000
 data=pd.read_table(tr_file_name, nrows=nrows, header=None)
 
@@ -43,7 +43,7 @@ X_train = group.iloc[:,2:num_cols-1].as_matrix()
 # Train the transformer and preprocess X_train
 ltr_preprocessor = MinMaxScaler()
 X_train=ltr_preprocessor.fit_transform(X_train)
-ltr_preprocessor_fn = os.path.join(home,'backup/datasets/ner/tmp/ltr_preprocessor.%s.pkl' %(nrows,))
+ltr_preprocessor_fn = os.path.join('../model/tmp/ltr_preprocessor.%s.pkl' %(nrows,))
 joblib.dump(ltr_preprocessor, open(ltr_preprocessor_fn, 'wb'))
 ####
 
@@ -80,7 +80,7 @@ Ts_pred = model.predict(X_test)
 print 'Random ranking:', metric.calc_mean_random(qid_test, y_test)
 print 'Our model:', metric.calc_mean(qid_test, y_test, Ts_pred)
 
-model_file_name = os.path.join(home,'backup/datasets/ner/tmp/ltr.%s.pkl'%(nrows,))
+model_file_name = os.path.join('../model/tmp/ltr.%s.pkl'%(nrows,))
 joblib.dump(model, open(model_file_name, 'wb'))
 
 print 'Model saved'
