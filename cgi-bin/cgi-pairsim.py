@@ -4,9 +4,12 @@
 import json
 import cgi, cgitb 
 
-import sys
+import sys, os
 
-sys.path.insert(0,'..')
+# Apache wanats this
+dirname = os.path.dirname(__file__)
+sys.path.insert(0,os.path.join(dirname, '..'))
+
 from wikisim.calcsim import *
 log('cgi-pairsim started');
 

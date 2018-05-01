@@ -4,9 +4,11 @@
 import json
 import cgi, cgitb 
 
-import sys
+import sys, os
 
-sys.path.insert(0,'..')
+dirname = os.path.dirname(__file__)
+sys.path.insert(0,os.path.join(dirname, '..'))
+
 from wikify.wikify import *
 
 log('cgi-wikify started');
@@ -17,10 +19,20 @@ log('cgi-wikify started');
 form = cgi.FieldStorage() 
 
 # Get data from fields
-mentionmethod=int(form.getvalue('mentionmethod'))
+params = int(form.getvalue('modelparams'))
 wikitext  = form.getvalue('wikitext')
 
 print "Content-type:application/json\r\n\r\n"
+
+if params==0:
+    mentionmethod = 0
+    load_wsd_model(LTR_NROWS_S)    
+    
+if params==1 or params==2:
+    mentionmethod = 1
+    svc_nrows, svc_cv, ltr_nrows = get_wikifify_params(params)    
+    load_mention_model(svc_nrows, svc_cv)
+    load_wsd_model(ltr_nrows)
 
 wikifiedtext = wikify_api(wikitext, mentionmethod=mentionmethod)
 

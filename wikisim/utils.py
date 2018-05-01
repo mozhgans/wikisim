@@ -10,18 +10,20 @@ import datetime
 
 __author__ = "Armin Sajadi"
 __copyright__ = "Copyright 215, The Wikisim Project"
-__credits__ = ["Armin Sajadi", "Evangelo Milios", "Armin Sajadi"]
+__credits__ = ["Armin Sajadi"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Armin Sajadi"
 __email__ = "sajadi@cs.dal.ca"
 __status__ = "Development"
 
+dirname = os.path.dirname(__file__)
+
 def readds(url, usecols=None):    
     data = pd.read_table(url, header=None, usecols=usecols)
     return data
 
-DISABLE_LOG=True;
+DISABLE_LOG=False;
 
 def clearlog(logfile):
     with open(logfile, 'w'):
@@ -37,8 +39,8 @@ def log(instr, *params):
         return
     logres(logfile, instr, *params)
     
+outdir = os.path.join(dirname, '../out')    
 if not DISABLE_LOG:    
-    outdir = '../out'    
     logfile=os.path.join(outdir, 'log.txt');
     if not os.path.exists(logfile):
         if not os.path.exists(outdir):

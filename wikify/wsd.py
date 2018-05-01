@@ -25,7 +25,8 @@ __email__ = "sajadi@cs.dal.ca"
 __status__ = "Development"
 
 
-LTR_NROWS=10000
+LTR_NROWS_S = 10000
+LTR_NROWS_L = 50000
 wsd_model_preprocessor_ = None
 wsd_model_=None
 def load_wsd_model(nrows):
@@ -34,17 +35,17 @@ def load_wsd_model(nrows):
     wsd_model_preprocessor_fn = os.path.join(MODELDIR, 'ltr_preprocessor.%s.pkl' %(nrows, ))
     if os.path.isfile(wsd_model_preprocessor_fn): 
         wsd_model_preprocessor_ = joblib.load(open(wsd_model_preprocessor_fn, 'rb'))    
-        print "wsd_model_preprocessor file (%s) loaded" % (wsd_model_preprocessor_fn,)
+        log("[load_wsd_model]\twsd_model_preprocessor file (%s) loaded" % (wsd_model_preprocessor_fn,))
     else:
-        print "wsd_model_preprocessor file (%s) not found" % (wsd_model_preprocessor_fn,)
+        log("[load_wsd_model]\twsd_model_preprocessor file (%s) not found" % (wsd_model_preprocessor_fn,))
 
 
     wsd_model_fn_ = os.path.join(MODELDIR, 'ltr.%s.pkl'%(nrows,))
     if os.path.isfile(wsd_model_fn_): 
         wsd_model_ = joblib.load(open(wsd_model_fn_, 'rb'))    
-        print "wsd_model file (%s) loaded" % (wsd_model_fn_,)
+        log("[load_wsd_model]\twsd_model file (%s) loaded" % (wsd_model_fn_,))
     else:
-        print "wsd_model file (%s) not found" % (wsd_model_fn_,)
+        log("[load_wsd_model]\twsd_model file (%s) not found" % (wsd_model_fn_,))
 
 
 def get_context(anchor, eid, rows=50000):
@@ -69,7 +70,7 @@ def get_context(anchor, eid, rows=50000):
     
     r = session.get(qstr, params=params).json()
     if 'response' not in r: 
-        print "[terminating]\t%s",(str(r),)
+        log("[get_context]\t(terminating)\t%s",(str(r),))
         sys.stdout.flush()
         os._exit(0)
         

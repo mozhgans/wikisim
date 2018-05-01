@@ -2,12 +2,14 @@
 """
 from __future__ import division
 
-import sys
+import sys, os
 from itertools import chain
 from itertools import product
 from itertools import combinations
 import unicodedata
-sys.path.insert(0,'..')
+
+dirname = os.path.dirname(__file__)
+sys.path.insert(0,os.path.join(dirname, '..'))
 from wikisim.config import *
 from wikisim.calcsim import *
 from requests.packages.urllib3 import Retry
@@ -21,7 +23,8 @@ __maintainer__ = "Armin Sajadi"
 __email__ = "sajadi@cs.dal.ca"
 __status__ = "Development"
 
-MODELDIR = "../models";
+dirname = os.path.dirname(__file__)
+MODELDIR = os.path.join(dirname, "../models")
 
 session = requests.Session()
 http_retries = Retry(total=20,
@@ -102,6 +105,9 @@ def solr_encode(inputstr):
         Output: 
             Ascii encoded string
     '''
+    if type(inputstr) is str:
+        return inputstr
+    log('[solr_encode]\t Encoded to ascii')
     return unicodedata.normalize('NFKD', inputstr).encode('ascii', 'ignore')
 
 
@@ -239,4 +245,5 @@ def get_overall_measures(tp_list):
     
     return macro_prec, macro_rec, macro_f1, micro_prec, micro_rec, micro_f1
      
-    
+
+        

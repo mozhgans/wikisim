@@ -17,8 +17,12 @@ __status__ = "Development"
 CORE_NLP=0
 LEARNED_MENTION=1
 
-SVC_MODEL_HIGH_PRECISION_NROWS, SVC_MODEL_HIGH_PRECISION_CV = 10000,1
-SVC_MODEL_HIGH_RECALL_NROWS, SVC_MODEL_HIGH_RECALL_CV = 10000,20
+SVC_HP_NROWS_S, SVC_HP_CV_S = 10000,1
+SVC_HR_NROWS_S, SVC_HR_CV_S = 10000,20
+
+
+SVC_HP_NROWS_L, SVC_HP_CV_L = 50000,1
+SVC_HR_NROWS_L, SVC_HR_CV_L = 50000,20
 
 
 mention_model_preprocessor_=None
@@ -28,18 +32,18 @@ def load_mention_model(nrows, svc):
     global mention_model_preprocessor_, mention_model_
     mention_model_preprocessor_fn = os.path.join(MODELDIR, 'svc_preprocessor.%s.pkl' % (nrows,))
     if os.path.isfile(mention_model_preprocessor_fn): 
-        print "mention_model_preprocessor file (%s) loaded" % (mention_model_preprocessor_fn,)
+        log("[load_mention_model]\tmention_model_preprocessor file (%s) loaded" % (mention_model_preprocessor_fn,))
         mention_model_preprocessor_ = joblib.load(open(mention_model_preprocessor_fn, 'rb'))
     else:
-        print "mention_model_preprocessor file (%s) not found" % (mention_model_preprocessor_fn,)
+        log("[load_mention_model]\tmention_model_preprocessor file (%s) not found" % (mention_model_preprocessor_fn,))
 
 
     mention_model_fn = os.path.join(MODELDIR, 'svc_mentions_unbalanced.%s.%s.pkl' % (nrows,svc))
     if os.path.isfile(mention_model_fn): 
         mention_model_ = joblib.load(open(mention_model_fn, 'rb'))    
-        print "mention_model_ file (%s) loaded" % (mention_model_fn,)
+        log("[load_mention_model]\tmention_model_ file (%s) loaded" % (mention_model_fn,))
     else:
-        print "mention_model_ file (%s) not found" % (mention_model_fn,)
+        log("[load_mention_model]\tmention_model_ file (%s) not found" % (mention_model_fn,))
         
 
 def tokenize_stanford(text):

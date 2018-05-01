@@ -12,7 +12,9 @@ from shutil import copyfile
 import json
 
 
-sys.path.insert(0,'..')
+dirname = os.path.dirname(__file__)
+sys.path.insert(0,os.path.join(dirname, '..'))
+
 from wikify.wikify import *
 
 log('cgi-batchwikify started');
@@ -84,7 +86,15 @@ with open(resultfile,'w') as f:
 
 
 
-mentionmethod =int(form.getvalue('mentionmethod'))
+if params==0:
+    mentionmethod = 0
+    load_wsd_model(LTR_NROWS_S)    
+    
+if params==1 or params==2:
+    svc_nrows, svc_cv, ltr_nrows = get_wikifify_params(params+2)    
+    load_mention_model(svc_nrows, svc_cv)
+    load_wsd_model(ltr_nrows)
+
 
 wikify_from_file_api(infn, outfn, mentionmethod)
 

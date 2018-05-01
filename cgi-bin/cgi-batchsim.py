@@ -11,8 +11,9 @@ from bs4 import BeautifulSoup as soup
 from shutil import copyfile
 import json
 
+dirname = os.path.dirname(__file__)
+sys.path.insert(0,os.path.join(dirname, '..'))
 
-sys.path.insert(0,'..')
 from wikisim.calcsim import *
 
 log('cgi-batchsim started');

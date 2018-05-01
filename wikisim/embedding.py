@@ -10,7 +10,7 @@ import gensim
 
 __author__ = "Armin Sajadi"
 __copyright__ = "Copyright 215, The Wikisim Project"
-__credits__ = ["Armin Sajadi", "Evangelo Milios", "Armin Sajadi"]
+__credits__ = ["Armin Sajadi"]
 __license__ = "GPL"
 __version__ = "1.0.1"
 __maintainer__ = "Armin Sajadi"
@@ -112,7 +112,7 @@ def conceptrep_rvs(wid, direction, get_titles=True, cutoff=None):
         em = em.sort_values(ascending=False)
         em = em[:cutoff]
     if get_titles:
-        em = pd.Series(zip(ids2title(em.index), em.values.tolist()), index=em.index)
+        em = pd.Series(zip(ids2title(em.index.tolist()), em.values.tolist()), index=em.index)
     log ('[conceptrep]\tfinished')
     return em
 

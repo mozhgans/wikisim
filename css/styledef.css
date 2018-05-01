@@ -1,3 +1,18 @@
+#eldiv {
+	clear:both;
+	margin-bottom:10px;
+}
+#elsidediv {
+   width:40%;
+   float:left; 
+}
+#elchartviz {
+   width:60%;
+   float:left; 
+
+}
+
+
 #simdiv {
  	clear:both;
  	margin-bottom:10px;
@@ -44,6 +59,6 @@
 	border-style:solid;
 }
 
-#bottomdiv {
+ #bottomdiv {
  	clear:both;
 }

@@ -10,6 +10,25 @@ __maintainer__ = "Armin Sajadi"
 __email__ = "sajadi@cs.dal.ca"
 __status__ = "Development"
 
+HIGH_PREC_SMALL = 1
+HIGH_REC_SMALL = 2
+HIGH_PREC_LARGE = 3
+HIGH_REC_LARGE = 4
+ 
+
+def get_wikifify_params(opt):
+    if opt == HIGH_PREC_SMALL:
+        return SVC_HP_NROWS_S, SVC_HP_CV_S, LTR_NROWS_S
+    
+    if opt == HIGH_REC_SMALL: 
+        return SVC_HR_NROWS_S, SVC_HR_CV_S, LTR_NROWS_S
+    
+    if opt == HIGH_PREC_LARGE: 
+        return SVC_HP_NROWS_L, SVC_HP_CV_L, LTR_NROWS_L
+    
+    if opt == HIGH_REC_LARGE: 
+        return SVC_HR_NROWS_L, SVC_HR_CV_L, LTR_NROWS_L
+
 
 def wikify_string(line, mentionmethod=CORE_NLP, max_t=20):
     S,M = detect_mentions(line, mentionmethod)      
@@ -27,7 +46,7 @@ def wikify_a_line(line, mentionmethod=CORE_NLP):
         Output:
             Annotated Sentence inwhich mentiones are hyper-linked to the Wikipedia concepts
     '''
-    S, M = wikify_string(line, mentionmethod=CORE_NLP) 
+    S, M = wikify_string(line, mentionmethod) 
     for m in M: 
         S[m[0]]="<a href=https://en.wikipedia.org/wiki/%s>%s</a>"  % (S[m[0]],m[1])
     S_reconcat = " ".join(S)
