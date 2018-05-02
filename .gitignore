@@ -5,6 +5,7 @@
 *~
 *.pkl
 *.log
+log.txt
 wikification
 scrap.*
 draft.*
