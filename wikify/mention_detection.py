@@ -163,9 +163,9 @@ def solrtagger_pos(S,M,P):
         j_backup=j
         q=[]
         while j<len(P):
-            if similar(P[j][0], m[0])> .8:
+            if strsimilar(P[j][0], m[0])> .8:
                 k=0
-                while similar(P[j][0], m[k])>0.8:
+                while strsimilar(P[j][0], m[k])>0.8:
                     #q.append(P[j]) #good for debugging
                     q.append(P[j][1]) #good for debugging
                     k=k+1
@@ -215,12 +215,6 @@ def get_mention_probs(S,M):
 
 def boil_down_candidate_score(score_list):
     return [sum(scores)/len(scores) for scores in scores_list]
-        
-    
-from difflib import SequenceMatcher
-
-def similar(a, b):
-    return SequenceMatcher(None, a, b).ratio()
 
 def mention_overlap(S1, M1, S2,M2):
     '''Calculates the overlap between two given detected mentions
@@ -235,7 +229,7 @@ def mention_overlap(S1, M1, S2,M2):
     for m1 in M1:
         found = 0
         for m2 in M2:
-            if similar(S1[m1[0]], S2[m2[0]])>0.8:
+            if strsimilar(S1[m1[0]], S2[m2[0]])>0.8:
                 found=1
         is_detected.append(found)
     return is_detected
@@ -249,7 +243,7 @@ def detect_and_score_mentions(text, max_t=5):
             Scores, in this format [[(c111, c11s),...(c1k1, c1ks)],...[(cn11, pn1s),...(c1m1, p1ms)]]
             where cijk is the k-th scores for cij candidate
     """
-    text = solr_encode(text)
+    text = throw_unicodes(text)
     solr_S, solr_M = annotate_with_solrtagger(text)
     # max_t does not have to equal the number of candidates in wsd, it's just to 
     # get an average relevancy

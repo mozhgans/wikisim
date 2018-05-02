@@ -96,7 +96,7 @@ def solr_unescape(s):
     to_sub=re.escape(r'+-&&||!(){}[]^"~*?:\/')
     return re.sub('\\\([%s])'%(to_sub,), r'\g<1>', s)
 
-def solr_encode(inputstr):
+def throw_unicodes(inputstr):
     '''This function "ideally" should prepare the text in the correct encoding
         which is utf-16, but I couldn't (cf. my encoding notes)
         so for know, just make everything ascii!
@@ -107,7 +107,7 @@ def solr_encode(inputstr):
     '''
     if isinstance(inputstr, str):
         return inputstr
-    log('[solr_encode]\t Encoded to ascii')
+    log('[throw_unicodes]\t Encoded to ascii')
     return unicodedata.normalize('NFKD', inputstr).encode('ascii', 'ignore')
 
 
@@ -148,7 +148,10 @@ def get_prec(tp_list):
     
     return micro_prec, macro_prec
 
-    
+from difflib import SequenceMatcher
+def strsimilar(a, b):
+    return SequenceMatcher(None, a, b).ratio()
+
 def get_sentence_measures(S, M, S_gold, M_gold, wsd_measure=False):
     ''' Calcuates precision/recall/F1 for mention detection/wsd for a given sentence
         Input:
@@ -162,7 +165,8 @@ def get_sentence_measures(S, M, S_gold, M_gold, wsd_measure=False):
             precision, recall, f-measure
             
     '''
-                    
+    
+    S_gold = [throw_unicodes(s.replace(' ','')) for s in S_gold]    
     Sgi=[]
     Mgi=[]
     last_index=0
@@ -170,14 +174,14 @@ def get_sentence_measures(S, M, S_gold, M_gold, wsd_measure=False):
         Sgi.append ([last_index, last_index+len(s)])
         last_index += len(s)
     Mgi = [Sgi[m[0]] for m in M_gold]    
-                
+    
+    S = [throw_unicodes(s.replace(' ','')) for s in S]    
     Sj=[]
     last_index=0
     for s in S:
         Sj.append ([last_index, last_index+len(s)])
         last_index += len(s)
     Mj = [Sj[m[0]] for m in M]    
-    
     
     i=0
     j=0
@@ -193,12 +197,12 @@ def get_sentence_measures(S, M, S_gold, M_gold, wsd_measure=False):
             fn += (len(Mgi)-i)
             break
             
-        if Mgi[i][1] <= Mj[j][0]:
+        if (Mgi[i][1] <= Mj[j][0]) or ((Mgi[i][1] <= Mj[j][1]) and strsimilar(S_gold[M_gold[i][0]], S[M[j][0]])<0.5):
             fn += 1
             i += 1
             continue
             
-        if  Mgi[i][0] >= Mj[j][1]:
+        if  (Mgi[i][0] >= Mj[j][1]) or ((Mgi[i][0] <= Mj[j][1]) and strsimilar(S_gold[M_gold[i][0]], S[M[j][0]])<0.5):
             fp += 1
             j += 1
             continue
@@ -209,12 +213,12 @@ def get_sentence_measures(S, M, S_gold, M_gold, wsd_measure=False):
                 i += 1
                 j += 1
                 continue
-            
+        #print "match:%s, %s (%s, %s) " % (Mgi[i], Mj[j], S_gold[M_gold[i][0]], S[M[j][0]])
         tp +=1
         i += 1
         j += 1
         
-    return tp, fp, fn
+    return tp, fp, fn   
             
 def get_overall_measures(tp_list):
     """Returns micro/macro measures, given a list of (tp, fp, fn)
