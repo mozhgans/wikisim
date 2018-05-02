@@ -90,7 +90,8 @@ direction =int(form.getvalue('dir'))
 log('cutoff%s', 'cutoff');
 
 cutoff=form.getvalue('cutoff')
-cutoff = None if cutoff.lower()=="all" else int(cutoff)
+if cutoff is not None:
+    cutoff = None if cutoff.lower()=="all" else int(cutoff)
 
 log('cutoff%s', cutoff);
 

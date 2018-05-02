@@ -90,7 +90,7 @@ def annotate_with_solrtagger(text):
     '''
     addr = 'http://localhost:8983/solr/enwikianchors20160305/tag'
     params={'overlaps':'LONGEST_DOMINANT_RIGHT', 'tagsLimit':'5000', 'fl':'id','wt':'json','indent':'on','matchText':'true'}
-    text=solr_escape(text)
+    #text=solr_escape(text) Maybe not needed!
     r = session.post(addr, params=params, data=text.encode('utf-8'))    
 
     S,M = encode_solrtexttagger_result(text,r.json()['tags'])
@@ -158,7 +158,8 @@ def solrtagger_pos(S,M,P):
     Q=[]
     j=0
     for i in range(len(M)):
-        m=tokenize_stanford(solr_unescape(S[M[i][0]])) 
+        #m=tokenize_stanford(solr_unescape(S[M[i][0]]))  I skip escaping for now
+        m=tokenize_stanford(S[M[i][0]]) 
         j_backup=j
         q=[]
         while j<len(P):

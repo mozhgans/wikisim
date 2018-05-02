@@ -1,4 +1,4 @@
-#!/home/sajadi/anaconda2/bin/python
+#!/users/grad/sajadi/backup/anaconda2/envs/wikisim/bin/python
 #/users/grad/sajadi/backup/anaconda2/bin/python
 
 import sys
@@ -84,13 +84,14 @@ with open(resultfile,'w') as f:
 
 # Starting the process
 
-
+params = int(form.getvalue('modelparams'))
 
 if params==0:
     mentionmethod = 0
     load_wsd_model(LTR_NROWS_S)    
     
 if params==1 or params==2:
+    mentionmethod = 1
     svc_nrows, svc_cv, ltr_nrows = get_wikifify_params(params+2)    
     load_mention_model(svc_nrows, svc_cv)
     load_wsd_model(ltr_nrows)

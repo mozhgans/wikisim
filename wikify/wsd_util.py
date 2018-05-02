@@ -105,7 +105,7 @@ def solr_encode(inputstr):
         Output: 
             Ascii encoded string
     '''
-    if type(inputstr) is str:
+    if isinstance(inputstr, str):
         return inputstr
     log('[solr_encode]\t Encoded to ascii')
     return unicodedata.normalize('NFKD', inputstr).encode('ascii', 'ignore')

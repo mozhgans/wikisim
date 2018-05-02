@@ -41,8 +41,8 @@ dsnames = [os.path.join(dsdir_ner, 'kore.json'),
 
 
 
-mentionmethods = (LEARNED_MENTION, CORE_NLP)
 mentionmethods = (LEARNED_MENTION,)
+mentionmethods = (LEARNED_MENTION, CORE_NLP)
 
 outdir = os.path.join(baseresdir, 'wikify')
 # if not os.path.exists(outdir): #Causes synchronization problem
@@ -59,13 +59,15 @@ detailedresname=  os.path.join(outdir, 'detailedreslog.txt')
 #clearlog(detailedresname)
 
 
-svc_params = ((SVC_MODEL_HIGH_PRECISION_NROWS, SVC_MODEL_HIGH_PRECISION_CV), 
-              (SVC_MODEL_HIGH_RECALL_NROWS, SVC_MODEL_HIGH_RECALL_CV))
-svc_params = ((50000,1), (50000,20))
+svc_params = (
+#               (SVC_HP_NROWS_S, SVC_HP_CV_S), 
+#               (SVC_HR_NROWS_S, SVC_HR_CV_S),
+              (SVC_HP_NROWS_L, SVC_HP_CV_L), 
+              (SVC_HR_NROWS_L, SVC_HR_CV_L))
 
 
+ltr_nrows=LTR_NROWS_L
 
-ltr_nrows=50000
 load_wsd_model(ltr_nrows)
 
 

@@ -151,7 +151,7 @@ def get_solr_count(s):
     Returns:
         The number of documents
     """
-    q='+text:(%s)'%(s,)
+    q='+text:(%s)'%(solr_escape(s),)
     qstr = 'http://localhost:8983/solr/enwiki20160305/select'
     params={'indent':'on', 'wt':'json', 'q':q, 'rows':0}
     r = session.get(qstr, params=params)

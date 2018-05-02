@@ -31,6 +31,9 @@ def get_wikifify_params(opt):
 
 
 def wikify_string(line, mentionmethod=CORE_NLP, max_t=20):
+    if not isinstance(line, unicode):
+        line = line.decode('utf-8')
+    
     S,M = detect_mentions(line, mentionmethod)      
     C = generate_candidates(S, M, max_t=max_t, enforce=False)
     E = wsd(S, M, C, method='learned')
@@ -48,7 +51,7 @@ def wikify_a_line(line, mentionmethod=CORE_NLP):
     '''
     S, M = wikify_string(line, mentionmethod) 
     for m in M: 
-        S[m[0]]="<a href=https://en.wikipedia.org/wiki/%s>%s</a>"  % (S[m[0]],m[1])
+        S[m[0]]="<a href=https://en.wikipedia.org/wiki/%s>%s</a>"  % (m[1], S[m[0]])
     S_reconcat = " ".join(S)
     return S_reconcat
             
@@ -60,8 +63,8 @@ def wikify_api(text, mentionmethod=CORE_NLP):
 
 def wikify_from_file_api(infilename, outfilename, mentionmethod=CORE_NLP):
     with open(infilename) as infile, open(outfilename, 'w') as outfile:
-        for line in infilename.readlines():
-            wikified = wikify_a_line(text, mentionmethod)
+        for line in infile.readlines():
+            wikified = wikify_api(line, mentionmethod)
             outfile.write(wikified + "\n")
 
             
