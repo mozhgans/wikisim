@@ -6,7 +6,7 @@
 import os.path
 import sys
 import datetime
-import logging
+#import logging
 from wikipedia import *
 
 
@@ -17,7 +17,7 @@ workingdir = os.path.join(home , 'backup/tmp/');
 baseresdir = path = os.path.join(workingdir, 'results')
 
 
-logging.basicConfig(filename=os.path.join(workingdir,'myapp.log'), level=logging.INFO);    
+#logging.basicConfig(filename=os.path.join(workingdir,'myapp.log'), level=logging.INFO);    
 
     
 def resdir(hitsver, direction=None):   
