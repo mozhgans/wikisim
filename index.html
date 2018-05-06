@@ -93,6 +93,28 @@
                 <strong>Graph Embedding</strong>". You can play with the demo, or directly request to the
                 <a href="#api">web service</a>. </p>
         </div>
+        <div id="webaddress">
+            <div class="container">
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h2>Web Adresses</h2>
+                            <a name="curraddress"></a>
+                        </div>
+
+                        <div class="panel-body">
+                            <h2>API Adress (current):
+                                <a href="http://35.231.242.71/wikisim">http://35.231.242.71/wikisim</a>
+                            </h2>
+                            <h2>Sourcce code:
+                                <a href="https://github.com/asajadi/wikisim">https://github.com/asajadi/wikisim</a>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="container" id="eldiv">
             <div id="elsidediv">
                 <div class="panel-group">
@@ -157,7 +179,8 @@
                                     <div class="alert alert-success " role="alert" id='batcheldiv'>
                                         <label for="batcheldiv"></label>
                                         <p>Check the
-                                            <a href='out/results.html'>results page</a> for the results</p>
+                                                <a href='out/results.html'>results page</a> for the results</p>
+                                            
                                     </div>
                                     <div class="progress collapse" id="batchelprogdiv">
                                         <progress></progress>
@@ -368,16 +391,16 @@
             <div id="embchartviz">
             </div>
         </div>
-        <div class="container">
+        <div class="container" id="docdiv">
             <div class="panel-group">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <a name="doc"></a>
-                        <h1> Wikisim </h1>
+                        <h2> What is Wikisim? </h2>
                     </div>
                     <div class="panel-body">
                         <p>
-                            <strong>Wikisim provides the following serrvices:</strong>
+                            <h3>Wikisim provides the following serrvices:</h3>
                         </p>
                         <ul>
                             <li>Vector-Space Representation of Wikipedia Concepts</li>
@@ -385,7 +408,7 @@
                             <li>Wikification: Entity Linking to Wikipedia</li>
                         </ul>
                         <p>
-                            <strong>Publications: </strong>
+                            <h3>Publications: </h3>
                         </p>
                         <p>
                             Detailed decription of the architecture and algorithms can be found in the following publications:
@@ -409,7 +432,7 @@
                                 <a href="http://link.springer.com/chapter/10.1007%2F978-3-319-06483-3_42#">pdf</a>)</li>
                         </ul>
                         <p>
-                            <strong>Awards</strong>
+                            <h3>Awards</h3>
                         </p>
                         <ul>
                             <li>Verifiability, Reproducibility, and Working Description Award, Computational Linguistics and
@@ -424,13 +447,13 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <a name="api"></a>
-                        <h1> API </h1>
+                        <h2> API </h2>
                     </div>
                     <div class="panel-body">
-                        <h2> Webservice Address </h2>
-                        Currently is hosted at
-                        <a href="https://web.cs.dal.ca/~sajadi/wikisim">https://web.cs.dal.ca/~sajadi/wikisim</a>
-                        <h2> Single mode </h2>
+                        <h3> Webservice Address </h3>
+                        Check the
+                        <a href="#curraddress">current address</a>:
+                        <h3> Single mode </h3>
                         <p>The webservice provides three basic functions (or tasks): Wikification, Simiarity and Embedding calculation.
                             All requests can be processed in
                             <em>single</em> or
@@ -449,8 +472,8 @@
                                 <code>wikitext</code>: the text to be wikified
                                 <br> Example (using curl):
                                 <br>
-                                <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-wikify.py' -F 'modelparams=0'  -F 'wikitext=Lee Jun-fan known professionally as Bruce Lee, was founder of the martial art Jeet Kune Do'
-                </code>
+                                <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-wikify.py' -F 'modelparams=0'  -F 'wikitext=Lee Jun-fan known professionally as Bruce Lee, was founder of the martial art Jeet Kune Do'
+                    </code>
                                 <li>
                                     <strong>Similarity Calculation</strong>:
                                     <br> parameters:
@@ -463,7 +486,7 @@
                                     <code>c1 (and c2)</code>: the concept to be processed
                                     <br> Example (using curl):
                                     <br>
-                                    <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-pairsim.py' -F 'task=sim' -F 'dir=1' -F 'c1=Bruce_Lee' -F 'c2=Arnold_Schwarzenegger'</code>
+                                    <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-pairsim.py' -F 'task=sim' -F 'dir=1' -F 'c1=Bruce_Lee' -F 'c2=Arnold_Schwarzenegger'</code>
                                 </li>
                                 <li>
                                     <strong>Concept Representation (Embedding): </strong>
@@ -483,10 +506,10 @@
                                     <code>c1</code>: the concept to be processed
                                     <br> Example (using curl):
                                     <br>
-                                    <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-pairsim.py' -F 'task=emb' -F 'dir=1' -F 'cutoff=10' -F 'c1=Bruce_Lee'</code>
+                                    <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-pairsim.py' -F 'task=emb' -F 'dir=1' -F 'cutoff=10' -F 'c1=Bruce_Lee'</code>
                                 </li>
                         </ul>
-                        <h2> Batch mode </h2>
+                        <h3> Batch mode </h3>
                         <p> We strongly recommend using batch mode, either by post request and sending the file, or simply uploading
                             the file in the batch mode input.</p>
                         <p>For Wikification, documents should be seperated by new lines. For similarity calculation, the file
@@ -499,21 +522,21 @@
                                 <code>cgi-batchwikify.py</code>
                                 <br> Example (using curl):
                                 <br>
-                                <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-batchwikify.py' -F 'modelparams=0'  -F 'file=@filename'</code>
+                                <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-batchwikify.py' -F 'modelparams=0'  -F 'file=@filename'</code>
                             </li>
                             <li>
                                 Similarity: use
                                 <code>cgi-batchsim.py</code>
                                 <br> Example (using curl):
                                 <br>
-                                <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-batchsim.py' -F 'task=sim' -F 'dir=1' -F 'file=@filename'</code>
+                                <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-batchsim.py' -F 'task=sim' -F 'dir=1' -F 'file=@filename'</code>
                             </li>
                             <li>
                                 Embedding: use
                                 <code>cgi-batchsim.py</code>
                                 <br> Example (using curl):
                                 <br>
-                                <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-batchsim.py' -F task='emb' -F 'dir=1' -F 'cutoff=10' -F 'file=@filename'</code>
+                                <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-batchsim.py' -F task='emb' -F 'dir=1' -F 'cutoff=10' -F 'file=@filename'</code>
                             </li>
                         </ul>
                     </div>
@@ -523,7 +546,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <a name="download"></a>
-                        <h1> Downloading the embeddings </h1>
+                        <h2> Downloading the embeddings </h2>
                     </div>
                     <div class="panel-body">
                         <strong> Current Version: enwiki20160305 </strong>
@@ -554,12 +577,12 @@
                         <p> But if you still want to use your own data-sturctures, download the following tables:</p>
                         <ol>
                             <li>
-                                <a href="http://cgm6.research.cs.dal.ca/~sajadi/downloads/wikisim/enwiki-20160305-page.main.tsv.gz">Page Table</a>
+                                <a href="../data/enwiki20160305/edited/enwiki-20160305-page.main.tsv.gz">Page Table</a>
                                 <p>Layout:</p>
                                 <code>page_id , page_namespace (0:page,14: Category) , page_title , page_is_redirect </code>
                             </li>
                             <li>
-                                <a href="http://cgm6.research.cs.dal.ca/~sajadi/downloads/wikisim/enwiki-20160305-redirect.main.tsv.gz"> Redirect Table</a>
+                                <a href="../data/enwiki20160305/edited/enwiki-20160305-redirect.main.tsv.gz"> Redirect Table</a>
                                 <p>Layout:</p>
                                 <code> rd_from , rd_to </code>
                             </li>
@@ -568,12 +591,12 @@
                                 up
                             </p>
                             <li>
-                                <a href="http://cgm6.research.cs.dal.ca/~sajadi/downloads/wikisim/enwiki-20160305-pagelinksorderedin.main.tsv.gz">Embeddings (in-links)</a>
+                                <a href="../data/enwiki20160305/edited/enwiki-20160305-pagelinksorderedin.main.tsv.gz">Embeddings (in-links)</a>
                                 <p>Layout:</p>
                                 <code> page_id , embedding in json format {id1:value1, ..., idn,valuen} </code>
                             </li>
                             <li>
-                                <a href="http://cgm6.research.cs.dal.ca/~sajadi/downloads/wikisim/enwiki-20160305-pagelinksorderedout.main.tsv.gz">Embeddings (Out-Links) </a>
+                                <a href="../data/enwiki20160305/edited/enwiki-20160305-pagelinksorderedout.main.tsv.gz">Embeddings (Out-Links) </a>
                                 <p>Layout:</p>
                                 <code> page_id , embedding in json format {id1:value1, ..., idn,valuen} </code>
                             </li>
@@ -585,11 +608,11 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <a name="hosting"></a>
-                        <h1>Hosting Wikisim</h1>
+                        <h2>Hosting Wikisim</h2>
                     </div>
                     <div class="panel-body">
                         You can run Wikisim locally and freely modify the source code.
-                        <h2>Step 1. </h2> Prepare the environement
+                        <h3>Step 1. </h3> Prepare the environement
                         <ul>
                             <li>Install
                                 <a href="https://conda.io/docs/user-guide/install/index.html">conda</a>
@@ -599,7 +622,9 @@
                                 <code>conda env create -f environment.yml</code>
                             </li>
                         </ul>
-                        <h2> Step 2. Clone the source cod</h2>
+                        <h3> Step 2. Clone the
+                            <a href="https://github.com/asajadi/wikisim">Source Code</a>
+                        </h3>
                         It is mostrly written in Python. The repository contains several files, but the following two notbooks are the main entries
                         to the source code and contain all the core features of the system
                         <ul>
@@ -615,17 +640,17 @@
                             </li>
                         </ul>
                         Having prepared the conda environement, you have two options for Step 3:
-                        <h2> Step3.</h2> Preparing the MariaDB and Apache Solr servers
+                        <h3> Step3.</h3> Preparing the MariaDB and Apache Solr servers
                         <h3>Option 1. Downloading the prepared servers</h3>
                         <p>This option saves you a lot of time if it works! It requires the following two steps:</p>
                         <p>You can download our MariaDB server and Solr Cores. If you are using Linux, there is a chance that
                             you can download the whole servers and they work out-of-the box.</p>
                         <ul>
                             <li>
-                                <a href=../wikipedia/mariadb-10.1.13-linux-x86_64-prembeddings.tar>Download MariaDB (+graph tables)</a>
+                                <a href=../data/enwiki20160305/servers/mariadb-10.1.13-linux-x86_64.tar>Download MariaDB (+graph tables)</a>
                             </li>
                             <li>
-                                <a href=../wikipedia/solr-6.0.0-context.tar>Download Solr (+text cores)</a>
+                                <a href=../data/enwiki20160305/servers/solr-6.0.0-context.tar>Download Solr (+text cores)</a>
                             </li>
                         </ul>
                         <h3>Option 2. Starting from the scratch and importing a different version of Wikipedia</h3>
@@ -650,7 +675,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <a name="about"></a>
-                        <h1> About </h1>
+                        <h2> About </h2>
                     </div>
                     <div class="panel-body">
                         <p>
@@ -660,8 +685,8 @@
                             This research was funded by the Natural Sciences and Engineering Research Council of Canada (NSERC),
                             the Boeing Company, and Mitacs</p>
                         <p>
-                            <strong>
-                                Contributors:</strong>
+                            <h3>
+                                Contributors:</h3>
                         </p>
                         <ul>
                             <li>
@@ -678,12 +703,12 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <a name="contact"></a>
-                        <h1> Contact </h1>
+                        <h2> Contact </h2>
                     </div>
                     <div class="panel-body">
-                        <h2>
+                        <h3>
                             <a title="Armin Sajadi" href="http://web.cs.dal.ca/~sajadi/">Armin Sajadi</a>
-                        </h2>
+                        </h3>
                         We appreciate and value any question, special feature request or bug report, just let us know at:
                         <br>
                         <a href="mailto:sajadi@cs.dal.ca?Subject=Wikisim">sajadi@cs.dal.ca</a>
@@ -756,6 +781,7 @@
                 $('#batcheldiv').removeClass('alert-danger').addClass('alert-success');
                 $("label[for='batcheldiv']").text("")
                 $('#batchelbutton').attr('disabled', true);
+                $('#batcheldiv').hide();
                 $('#batchelprogdiv').show();
 
                 var formData = new FormData();
@@ -780,20 +806,20 @@
                     contentType: false,
                     processData: false,
                     success: function (data, textstatus) {
-                        $("label[for='batcheldiv']").text("Job submitted, jobid: " + data['jobid'] + "")
-                        //$('#batchsimdiv').text(data)
-                        //var win = window.open(data["redirect"], '_blank');
-                        //win.focuse();
+                        $("label[for='batcheldiv']").text("Job submitted, jobid: " + data['jobid'])
+                        $('#batchelbutton').attr('disabled', false);
+                        $('#batcheldiv').show();
+                        $('#batchelprogdiv').hide();
 
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         $('#alerteldiv').removeClass('alert-success').addClass('alert-danger');
                         $("label[for='batcheldiv']").html(xhr.responseText)
+                        $('#batchelbutton').attr('disabled', false);
+                        $('#batcheldiv').show();
+                        $('#batchelprogdiv').hide();
                     }
                 });
-                $('#batchelbutton').attr('disabled', false);
-
-                $('#batchelprogdiv').hide();
             }
 
             //Semantic Relatedness
@@ -857,6 +883,7 @@
                 $('#batchsimdiv').removeClass('alert-danger').addClass('alert-success');
                 $("label[for='batchsimdiv']").text("")
                 $('#batchsimbutton').attr('disabled', true);
+                $('#batchsimdiv').hide();
                 $('#batchsimprogdiv').show();
 
                 var formData = new FormData();
@@ -884,15 +911,19 @@
                     processData: false,
                     success: function (data, textstatus) {
                         $("label[for='batchsimdiv']").text("Job submitted, jobid: " + data['jobid'] + "")
+                        $('#batchsimbutton').attr('disabled', false);
+                        $('#batchsimprogdiv').hide();
+                        $('#batchsimdiv').show();
 
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         $('#batchsimdiv').removeClass('alert-success').addClass('alert-danger');
                         $("label[for='batchsimdiv']").html(xhr.responseText)
+                        $('#batchsimbutton').attr('disabled', false);
+                        $('#batchsimprogdiv').hide();
+                        $('#batchsimdiv').show();
                     }
                 });
-                $('#batchsimbutton').attr('disabled', false);
-                $('#batchsimprogdiv').hide();
             }
             // Embedding
             $("#embbutton").click(function () {
@@ -954,6 +985,7 @@
                 $('#batchembdiv').removeClass('alert-danger').addClass('alert-success');
                 $("label[for='batchembdiv']").text("")
                 $('#batchembbutton').attr('disabled', true);
+                $('#batchembdiv').hide();
                 $('#batchembprogdiv').show();
 
 
@@ -981,20 +1013,19 @@
                     contentType: false,
                     processData: false,
                     success: function (data, textstatus) {
-                        //$('#batchsimdiv').text(data)
-                        //var win = window.open(data["redirect"], '_blank');
-                        //win.focuse();
                         $("label[for='batchembdiv']").text("Job submitted, jobid: " + data['jobid'] + "")
+                        $('#batchembbutton').attr('disabled', false);
+                        $('#batchembprogdiv').hide();
+                        $('#batchembdiv').show();
                     },
                     error: function (xhr, textStatus, errorThrown) {
-                        //$("label[for='batchembdiv']").text("error: " + xhr.responseText + "\n" + textStatus)
                         $('#batchembdiv').removeClass('alert-success').addClass('alert-danger');
                         $("label[for='batchembdiv']").html(xhr.responseText)
+                        $('#batchembbutton').attr('disabled', false);
+                        $('#batchembprogdiv').hide();
+                        $('#batchembdiv').show();
                     }
                 });
-                $('#batchembbutton').attr('disabled', false);
-
-                $('#batchembprogdiv').hide();
             }
 
             function createWords(cp) {

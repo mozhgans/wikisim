@@ -1,22 +1,43 @@
-<div class="container">
+<div id="webaddress">
+    <div class="container">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2>Web Adresses</h2>
+                    <a name="curraddress"></a>
+                </div>
+
+                <div class="panel-body">
+                    <h2>API Adress (current):
+                        <a href="http://35.231.242.71/wikisim">http://35.231.242.71/wikisim</a>
+                    </h2>
+                    <h2>Sourcce code:
+                        <a href="https://github.com/asajadi/wikisim">https://github.com/asajadi/wikisim</a>
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container" id="docdiv">
     <div class="panel-group">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <a name="doc"></a>
-                <h1> Wikisim </h1>
+                <h2> What is Wikisim? </h2>
             </div>
             <div class="panel-body">
                 <p>
-                    <strong>Wikisim provides the following serrvices:</strong>
+                    <h3>Wikisim provides the following serrvices:</h3>
                 </p>
                 <ul>
                     <li>Vector-Space Representation of Wikipedia Concepts</li>
                     <li>Semantic Relatedness between Wikipedia Concepts</li>
                     <li>Wikification: Entity Linking to Wikipedia</li>
                 </ul>
-                    <p>
-                        <strong>Publications: </strong>
-                    </p>
+                <p>
+                    <h3>Publications: </h3>
+                </p>
                 <p>
                     Detailed decription of the architecture and algorithms can be found in the following publications:
                 </p>
@@ -39,7 +60,7 @@
                         <a href="http://link.springer.com/chapter/10.1007%2F978-3-319-06483-3_42#">pdf</a>)</li>
                 </ul>
                 <p>
-                    <strong>Awards</strong>
+                    <h3>Awards</h3>
                 </p>
                 <ul>
                     <li>Verifiability, Reproducibility, and Working Description Award, Computational Linguistics and
@@ -54,13 +75,12 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <a name="api"></a>
-                <h1> API </h1>
+                <h2> API </h2>
             </div>
             <div class="panel-body">
-                <h2> Webservice Address </h2>
-                Currently is hosted at
-                <a href="https://web.cs.dal.ca/~sajadi/wikisim">https://web.cs.dal.ca/~sajadi/wikisim</a>
-                <h2> Single mode </h2>
+                <h3> Webservice Address </h3>
+                Check the <a href="#curraddress">current address</a>: 
+                <h3> Single mode </h3>
                 <p>The webservice provides three basic functions (or tasks): Wikification, Simiarity and Embedding calculation.
                     All requests can be processed in
                     <em>single</em> or
@@ -79,44 +99,44 @@
                         <code>wikitext</code>: the text to be wikified
                         <br> Example (using curl):
                         <br>
-                        <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-wikify.py' -F 'modelparams=0'  -F 'wikitext=Lee Jun-fan known professionally as Bruce Lee, was founder of the martial art Jeet Kune Do'
+                        <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-wikify.py' -F 'modelparams=0'  -F 'wikitext=Lee Jun-fan known professionally as Bruce Lee, was founder of the martial art Jeet Kune Do'
         </code>
-                    <li>
-                        <strong>Similarity Calculation</strong>:
-                        <br> parameters:
-                        <br>
-                        <code>task</code>: should be 'sim' for this task
-                        <br>
-                        <code>direction</code>: 0 for using incomming links, 1 for outgoing links and 2 for both. We recommend using only
-                        outgoing links as it provides decent results and is significantly faster
-                        <br>
-                        <code>c1 (and c2)</code>: the concept to be processed
-                        <br> Example (using curl):
-                        <br>
-                        <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-pairsim.py' -F 'task=sim' -F 'dir=1' -F 'c1=Bruce_Lee' -F 'c2=Arnold_Schwarzenegger'</code>
-                    </li>
-                    <li>
-                        <strong>Concept Representation (Embedding): </strong>
-                        <br> parameters:
-                        <br>
-                        <code>task</code>: should be 'emb' for this task
-                        <br>
-                        <code>direction</code>: 0 for using
-                        <em>incomming links</em>, 1 for
-                        <em>outgoing links</em> and 2 for
-                        <em>both</em>. We recommend using only outgoing links as it provides decent results and is significantly
-                        faster
-                        <br>
-                        <code>cutoff</code>: the dimensionality of the embedding. This parameter is only used for returning the embeddings,
-                        the similarity calculation always uses all the dimensions.
-                        <br>
-                        <code>c1</code>: the concept to be processed
-                        <br> Example (using curl):
-                        <br>
-                        <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-pairsim.py' -F 'task=emb' -F 'dir=1' -F 'cutoff=10' -F 'c1=Bruce_Lee'</code>
-                    </li>
+                        <li>
+                            <strong>Similarity Calculation</strong>:
+                            <br> parameters:
+                            <br>
+                            <code>task</code>: should be 'sim' for this task
+                            <br>
+                            <code>direction</code>: 0 for using incomming links, 1 for outgoing links and 2 for both. We recommend using
+                            only outgoing links as it provides decent results and is significantly faster
+                            <br>
+                            <code>c1 (and c2)</code>: the concept to be processed
+                            <br> Example (using curl):
+                            <br>
+                            <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-pairsim.py' -F 'task=sim' -F 'dir=1' -F 'c1=Bruce_Lee' -F 'c2=Arnold_Schwarzenegger'</code>
+                        </li>
+                        <li>
+                            <strong>Concept Representation (Embedding): </strong>
+                            <br> parameters:
+                            <br>
+                            <code>task</code>: should be 'emb' for this task
+                            <br>
+                            <code>direction</code>: 0 for using
+                            <em>incomming links</em>, 1 for
+                            <em>outgoing links</em> and 2 for
+                            <em>both</em>. We recommend using only outgoing links as it provides decent results and is
+                            significantly faster
+                            <br>
+                            <code>cutoff</code>: the dimensionality of the embedding. This parameter is only used for returning the
+                            embeddings, the similarity calculation always uses all the dimensions.
+                            <br>
+                            <code>c1</code>: the concept to be processed
+                            <br> Example (using curl):
+                            <br>
+                            <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-pairsim.py' -F 'task=emb' -F 'dir=1' -F 'cutoff=10' -F 'c1=Bruce_Lee'</code>
+                        </li>
                 </ul>
-                <h2> Batch mode </h2>
+                <h3> Batch mode </h3>
                 <p> We strongly recommend using batch mode, either by post request and sending the file, or simply uploading
                     the file in the batch mode input.</p>
                 <p>For Wikification, documents should be seperated by new lines. For similarity calculation, the file
@@ -129,21 +149,21 @@
                         <code>cgi-batchwikify.py</code>
                         <br> Example (using curl):
                         <br>
-                        <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-batchwikify.py' -F 'modelparams=0'  -F 'file=@filename'</code>
+                        <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-batchwikify.py' -F 'modelparams=0'  -F 'file=@filename'</code>
                     </li>
                     <li>
                         Similarity: use
                         <code>cgi-batchsim.py</code>
                         <br> Example (using curl):
                         <br>
-                        <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-batchsim.py' -F 'task=sim' -F 'dir=1' -F 'file=@filename'</code>
+                        <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-batchsim.py' -F 'task=sim' -F 'dir=1' -F 'file=@filename'</code>
                     </li>
                     <li>
                         Embedding: use
                         <code>cgi-batchsim.py</code>
                         <br> Example (using curl):
                         <br>
-                        <code>curl --request POST 'http://localhost:8000/cgi-bin/cgi-batchsim.py' -F task='emb' -F 'dir=1' -F 'cutoff=10' -F 'file=@filename'</code>
+                        <code>curl --request POST 'http://35.231.242.71/wikisim/cgi-bin/cgi-batchsim.py' -F task='emb' -F 'dir=1' -F 'cutoff=10' -F 'file=@filename'</code>
                     </li>
                 </ul>
             </div>
@@ -153,7 +173,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <a name="download"></a>
-                <h1> Downloading the embeddings </h1>
+                <h2> Downloading the embeddings </h2>
             </div>
             <div class="panel-body">
                 <strong> Current Version: enwiki20160305 </strong>
@@ -215,11 +235,11 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <a name="hosting"></a>
-                <h1>Hosting Wikisim</h1>
+                <h2>Hosting Wikisim</h2>
             </div>
             <div class="panel-body">
                 You can run Wikisim locally and freely modify the source code.
-                <h2>Step 1. </h2> Prepare the environement
+                <h3>Step 1. </h3> Prepare the environement
                 <ul>
                     <li>Install
                         <a href="https://conda.io/docs/user-guide/install/index.html">conda</a>
@@ -229,7 +249,7 @@
                         <code>conda env create -f environment.yml</code>
                     </li>
                 </ul>
-                <h2> Step 2. Clone the source cod</h2>
+                <h3> Step 2. Clone the <a href="https://github.com/asajadi/wikisim">Source Code</a></h3>
                 It is mostrly written in Python. The repository contains several files, but the following two notbooks are the main entries
                 to the source code and contain all the core features of the system
                 <ul>
@@ -245,7 +265,7 @@
                     </li>
                 </ul>
                 Having prepared the conda environement, you have two options for Step 3:
-                <h2> Step3.</h2> Preparing the MariaDB and Apache Solr servers
+                <h3> Step3.</h3> Preparing the MariaDB and Apache Solr servers
                 <h3>Option 1. Downloading the prepared servers</h3>
                 <p>This option saves you a lot of time if it works! It requires the following two steps:</p>
                 <p>You can download our MariaDB server and Solr Cores. If you are using Linux, there is a chance that
@@ -280,7 +300,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <a name="about"></a>
-                <h1> About </h1>
+                <h2> About </h2>
             </div>
             <div class="panel-body">
                 <p>
@@ -290,8 +310,8 @@
                     This research was funded by the Natural Sciences and Engineering Research Council of Canada (NSERC),
                     the Boeing Company, and Mitacs</p>
                 <p>
-                    <strong>
-                        Contributors:</strong>
+                    <h3>
+                        Contributors:</h3>
                 </p>
                 <ul>
                     <li>
@@ -308,12 +328,12 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <a name="contact"></a>
-                <h1> Contact </h1>
+                <h2> Contact </h2>
             </div>
             <div class="panel-body">
-                <h2>
+                <h3>
                     <a title="Armin Sajadi" href="http://web.cs.dal.ca/~sajadi/">Armin Sajadi</a>
-                </h2>
+                </h3>
                 We appreciate and value any question, special feature request or bug report, just let us know at:
                 <br>
                 <a href="mailto:sajadi@cs.dal.ca?Subject=Wikisim">sajadi@cs.dal.ca</a>

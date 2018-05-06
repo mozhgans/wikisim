@@ -59,7 +59,7 @@ def wikify_api(text, mentionmethod=CORE_NLP):
     outlist=[]
     for line in text.splitlines():
         outlist.append(wikify_a_line(line, mentionmethod))
-    return "\n".join(outlist).decode('utf-8')
+    return "<br>".join(outlist).decode('utf-8')
 
 def wikify_from_file_api(infilename, outfilename, mentionmethod=CORE_NLP):
     with open(infilename) as infile, open(outfilename, 'w') as outfile:
