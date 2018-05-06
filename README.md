@@ -3,10 +3,9 @@
         <div class="panel-group">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h2>Web Adresses</h2>
+                    <h2>Web Addresses</h2>
                     <a name="curraddress"></a>
                 </div>
-
                 <div class="panel-body">
                     <h2>API Adress (current):
                         <a href="http://35.231.242.71/wikisim">http://35.231.242.71/wikisim</a>
