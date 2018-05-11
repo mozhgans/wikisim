@@ -6,7 +6,7 @@ from __future__ import division
 
 from collections import Counter
 import sys
-from coherence import *
+from vsmcoherence import *
 from sklearn.externals import joblib
 #sys.path.insert(0,'..')
 
@@ -428,26 +428,6 @@ def get_all_scores(S, M, C):
 
 
 
-def keyentity_disambiguate(candslist, direction=DIR_OUT, method='rvspagerank'):
-    '''Disambiguate a sentence using key-entity method
-       Inputs: 
-           candslist: candidate list [[(c11, p11),...(c1k, p1k)],...[(cn1, pn1),...(c1m, p1m)]]
-           direction: embedding direction
-           method: similarity method
-       Returns: 
-           a list of entity ids and a list of titles
-    '''
-    
-        
-    candslist_scores = keyentity_candidate_scores (candslist, direction, method)
-    # Iterate 
-    true_entities = []
-    for cands, cands_scores in zip(candslist, candslist_scores):
-        max_index, max_value = max(enumerate(cands_scores), key= lambda x:x[1])
-        true_entities.append(cands[max_index][0])
-
-    titles = ids2title(true_entities)
-    return true_entities, titles  
 
 def learned_scores (S, M, candslist):
     '''returns entity scores using the learned (learned-to-rank method)
