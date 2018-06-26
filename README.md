@@ -8,7 +8,7 @@
                 </div>
                 <div class="panel-body">
                     <h2>API Adress (current):
-                        <a href="http://35.231.242.71/wikisim">http://35.231.242.71/wikisim</a>
+                        <a href="http://cgm6.research.cs.dal.ca/~sajadi/wikisim/">http://cgm6.research.cs.dal.ca/~sajadi/wikisim/</a>
                     </h2>
                     <h2>Sourcce code:
                         <a href="https://github.com/asajadi/wikisim">https://github.com/asajadi/wikisim</a>
