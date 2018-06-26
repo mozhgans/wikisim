@@ -1,5 +1,5 @@
-#!/home/asajadi/anaconda2/envs/wikisim/bin/python
-#/users/grad/sajadi/backup/anaconda2/envs/wikisim/bin/python
+#!/users/grad/sajadi/backup/anaconda2/envs/wikisim/bin/python
+#/home/asajadi/anaconda2/envs/wikisim/bin/python
 
 import sys
 import cgi, os
