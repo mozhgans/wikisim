@@ -34,7 +34,7 @@ def _unify_ids_scores(*id_sc_tuple):
         scs_u[[id2in[wid] for wid in ids]] = scs;            
         uscs += (scs_u,)                
     return uids, uscs       
-
+.
 def get_solr_count(s):
     """ Gets the number of documents the string occurs 
         NOTE: Multi words should be quoted
